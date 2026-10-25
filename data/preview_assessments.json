@@ -1,0 +1,35 @@
+{
+  "provenance": "Hand-authored interface preview. No model was called. No latency, token usage, or API cost is associated with these examples.",
+  "assessments": {
+    "C01": {
+      "matches": [
+        {"requirement_id": "R01", "status": "direct", "evidence_line_ids": ["L01", "L02"]},
+        {"requirement_id": "R02", "status": "direct", "evidence_line_ids": ["L02"]},
+        {"requirement_id": "R03", "status": "direct", "evidence_line_ids": ["L03"]},
+        {"requirement_id": "R04", "status": "direct", "evidence_line_ids": ["L04"]}
+      ],
+      "production_api": {"status": "yes", "evidence_line_ids": ["L02"]},
+      "backend_depth": {"level": 2, "evidence_line_ids": ["L02"]}
+    },
+    "C02": {
+      "matches": [
+        {"requirement_id": "R01", "status": "related", "evidence_line_ids": ["L02"]},
+        {"requirement_id": "R02", "status": "not_stated", "evidence_line_ids": []},
+        {"requirement_id": "R03", "status": "related", "evidence_line_ids": ["L03"]},
+        {"requirement_id": "R04", "status": "direct", "evidence_line_ids": ["L04"]}
+      ],
+      "production_api": {"status": "not_stated", "evidence_line_ids": []},
+      "backend_depth": {"level": 0, "evidence_line_ids": []}
+    },
+    "C03": {
+      "matches": [
+        {"requirement_id": "R01", "status": "direct", "evidence_line_ids": ["L02"]},
+        {"requirement_id": "R02", "status": "unclear", "evidence_line_ids": ["L03", "L04"]},
+        {"requirement_id": "R03", "status": "related", "evidence_line_ids": ["L01"]},
+        {"requirement_id": "R04", "status": "related", "evidence_line_ids": ["L01"]}
+      ],
+      "production_api": {"status": "unclear", "evidence_line_ids": ["L03", "L04"]},
+      "backend_depth": {"level": 1, "evidence_line_ids": ["L02"]}
+    }
+  }
+}

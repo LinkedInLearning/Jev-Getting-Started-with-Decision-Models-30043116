@@ -2,3 +2,22 @@
 node_modules
 .tmp
 npm-debug.log
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Local recording outputs
+recordings/
+exports/
+runs/
+.streamlit/secrets.toml
+.coverage

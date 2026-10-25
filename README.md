@@ -1,6 +1,8 @@
 # Jev: Getting Started with Decision Models
 This is the repository for the LinkedIn Learning course `Jev: Getting Started with Decision Models`. The full course is available from [LinkedIn Learning][lil-course-url].
 
+The `02_01b` branch contains **RoleMatch**, a working LLM starter for matching resume evidence against a job description. Start with [GETTING_STARTED.md](GETTING_STARTED.md). Jev is added in the next course stage.
+
 ![lil-thumbnail-url]
 
 ## Course Description
@@ -25,10 +27,12 @@ To resolve this issue:
 	Commit changes using this command: git commit -m "some message"
 
 ## Installing
-1. To use these exercise files, you must have the following installed:
-	- [list of requirements for course]
-2. Clone this repository into your local machine using the terminal (Mac), CMD (Windows), or a GUI tool like SourceTree.
-3. [Course-specific instructions]
+1. Install Python 3.12 and [uv](https://docs.astral.sh/uv/getting-started/installation/).
+2. Clone branch `02_01b`, then run `uv sync --locked`.
+3. Copy `.env.example` to `.env` and add your OpenRouter or OpenAI API key.
+4. Run `uv run streamlit run app.py` and open [localhost:8501](http://localhost:8501).
+
+The app includes synthetic resumes, a clearly labeled interface preview, and a live LLM matching workflow. See [GETTING_STARTED.md](GETTING_STARTED.md) for benchmark commands and the engine boundary used during recording.
 
 ## Instructor
 
