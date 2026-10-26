@@ -16,4 +16,4 @@ Preserve the job descriptions, PDF uploads, criteria, scoring rules, and source 
 Verify the app starts and analyzes with OPENAI_API_KEY and OPENROUTER_API_KEY unset. Update the setup instructions and run the checks. Keep keys in .env.
 ```
 
-For side-by-side results, choose the [comparison prompt](video-04-codex-prompt.md) instead. That path needs keys for both engines.
+For side-by-side results, choose the [comparison prompt](compare-engines.md) instead. That path needs keys for both engines.

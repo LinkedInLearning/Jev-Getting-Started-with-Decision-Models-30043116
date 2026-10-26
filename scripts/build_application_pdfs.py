@@ -1,4 +1,4 @@
-"""Build the five fictional application PDFs used in the course recording."""
+"""Build the sample application PDFs and download bundle."""
 
 import json
 from pathlib import Path
@@ -100,7 +100,7 @@ def build():
         canvas.line(45, 38, doc.pagesize[0] - 45, 38)
         canvas.setFillColor(colors.HexColor("#738078"))
         canvas.setFont("Helvetica", 7)
-        canvas.drawString(45, 25, "Fictional application prepared for training.")
+        canvas.drawString(45, 25, "Sample application. Fictional applicant.")
         canvas.drawRightString(doc.pagesize[0] - 45, 25, str(doc.page))
 
     for profile in profiles:
@@ -113,7 +113,7 @@ def build():
             topMargin=43,
             bottomMargin=49,
             title=f"{profile['name']} | Resume",
-            author="Fictional course applicant",
+            author="RoleMatch",
         )
         story = []
 

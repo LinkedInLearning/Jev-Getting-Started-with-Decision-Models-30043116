@@ -1,7 +1,7 @@
 [project]
-name = "jev-course-ats-starter"
+name = "rolematch"
 version = "0.1.0"
-description = "An LLM-powered resume evidence matching workbench for the Jev course."
+description = "Resume-to-job evidence matching with structured AI outputs."
 requires-python = ">=3.11,<3.14"
 dependencies = [
   "streamlit>=1.50,<2",

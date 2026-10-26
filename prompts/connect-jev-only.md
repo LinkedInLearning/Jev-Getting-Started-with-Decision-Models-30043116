@@ -1,10 +1,10 @@
 # Connect Jev as the only matching engine
 
-This is the optional Video 4 path for learners without an OpenAI or OpenRouter API key.
+Replace the LLM integration with Jev, without requiring an OpenAI or OpenRouter API key.
 
 Read the official documentation index at https://docs.typesafe.ai/llms.txt. Follow the current Python SDK, Choice, source-selection, response-usage, model-pricing, and retry-control documentation linked there.
 
-Read `AGENTS.md`, `README_APP.md`, `app.py`, and the modules under `ats_match/` before editing.
+Read `README.md`, `GETTING_STARTED.md`, `app.py`, and the modules under `ats_match/` before editing.
 
 This brief replaces the comparison brief for this path. Do not combine its instructions with the requirements to retain the LLM in `prompts/add-jev.md`.
 
@@ -19,8 +19,6 @@ Replace the `LLMMatcher` and `LLMSettings` startup path. Remove active OpenAI/Op
 Update `.env.example`, the dependency lockfile, setup instructions, and the benchmark entry point for Jev. Retire LLM-only runtime code and tests as appropriate. Preserve the meaning of the existing scoring criteria when moving their instructions into Jev questions.
 
 Do not add an LLM fallback, extraction call, or explanation-generation call. Neither missing keys nor failed Jev responses should trigger another provider.
-
-Keep the beginning snapshot `02_01b` intact. Make this optional implementation on a separate local branch. The comparison ending snapshot is a different path.
 
 ## Keep the ATS workflow
 
@@ -46,7 +44,7 @@ Remove the engine-selection menu and comparison controls. Jev is the only engine
 
 Show actual Jev answers, evidence coverage, production-delivery evidence, backend depth, cost, timing, failures, and reference-label agreement.
 
-Do not ask the learner to run or export an LLM baseline. Do not display invented LLM answers, savings percentages, speedups, or comparison results.
+Do not require an LLM baseline. Do not display invented LLM answers, savings percentages, speedups, or comparison results.
 
 Retain the original reference checks: 20 requirement labels and 10 additional checks for the unchanged bundled PDFs and Python role. Edited jobs and unrelated uploads have no supplied reference labels.
 
@@ -68,4 +66,4 @@ When `TYPESAFE_API_KEY` is missing, show a clear Jev-key setup message and keep 
 
 Run the checks. Verify the browser with the five bundled PDFs when a TypeSafe key is available. Preserve errors and disagreements. If no TypeSafe key is available, complete the implementation and mocked checks, then state that live verification is pending.
 
-Update README_APP.md so this converted app can be configured using only TYPESAFE_API_KEY and started with the documented command.
+Update README.md so this converted app can be configured using only TYPESAFE_API_KEY and started with the documented command.

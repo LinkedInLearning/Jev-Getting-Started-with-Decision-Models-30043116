@@ -1,4 +1,4 @@
-"""The LLM implementation. Replace this boundary during the recording."""
+"""Structured-output LLM matching, response validation, and usage accounting."""
 
 from __future__ import annotations
 

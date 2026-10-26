@@ -1,6 +1,6 @@
 {
   "dataset_version": "ats-synthetic-v1",
-  "note": "All resumes and the job description are synthetic teaching examples. Labels describe evidence in the text, not candidate suitability.",
+  "note": "Synthetic resumes and job description. Labels describe evidence in the text, not candidate suitability.",
   "job": {
     "title": "Python Backend Engineer",
     "description": "We are hiring a backend engineer to build Python APIs for a business workflow product. The role includes implementing REST services, deploying them to production, working with PostgreSQL schemas and queries, and writing automated tests with pytest. Review project evidence against these four requirements. Distinguish experience that is stated from information that is absent or conflicting.",

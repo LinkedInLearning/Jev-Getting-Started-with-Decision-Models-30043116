@@ -2,7 +2,7 @@
 
 Choose this prompt if you have an LLM provider key and want side-by-side answers, costs, and timing.
 
-No OpenAI or OpenRouter key? Choose the [Jev-only prompt](video-04-jev-only-prompt.md) instead. That path removes the LLM requirement and needs only a TypeSafe key.
+No OpenAI or OpenRouter key? Choose the [Jev-only prompt](jev-only.md) instead. That path removes the LLM requirement and needs only a TypeSafe key.
 
 Copy the prompt below into Codex.
 

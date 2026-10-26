@@ -5,7 +5,7 @@ from pypdf import PdfReader
 from ats_match.data import ROOT, application_reference, load_application_samples, load_openings
 
 
-def test_five_recording_pdfs_are_single_page_and_extract_as_resumes():
+def test_sample_pdfs_are_single_page_and_extract_as_resumes():
     job, resumes, labels = load_application_samples()
     assert job.title == "Python Backend Engineer"
     assert len(resumes) == len(labels) == 5
@@ -14,7 +14,7 @@ def test_five_recording_pdfs_are_single_page_and_extract_as_resumes():
         reader = PdfReader(path)
         assert len(reader.pages) == 1
         assert "Experience" in resume.text
-        assert "Fictional application" in resume.text
+        assert "Fictional applicant" in resume.text
         assert resume.label.replace("_", " ") in resume.text
         assert "Selected project" in resume.text
     assert Path(ROOT / "output/pdf/applicant-resumes.zip").is_file()

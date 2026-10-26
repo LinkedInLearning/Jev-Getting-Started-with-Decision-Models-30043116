@@ -1,12 +1,12 @@
 # Add Jev to RoleMatch
 
-This is the implementation brief for the Video 4 Codex prompt. It describes the ending state to build during the lesson. The starter branch remains LLM-only.
+Add Jev as a second matching engine while preserving the current LLM workflow.
 
-This is the comparison path. If the learner has no OpenAI or OpenRouter key, use the [Jev-only prompt](video-04-jev-only-prompt.md) and [Jev-only brief](connect-jev-only.md) instead. That path removes the LLM requirement and skips comparison.
+For an integration without an OpenAI or OpenRouter key, use the [Jev-only prompt](jev-only.md) and [Jev-only brief](connect-jev-only.md) instead.
 
 ## Read the application and current documentation
 
-Read `AGENTS.md`, `README_APP.md`, `GETTING_STARTED.md`, `app.py`, and the modules under `ats_match/`.
+Read `README.md`, `GETTING_STARTED.md`, `app.py`, and the modules under `ats_match/`.
 
 Use these primary sources. Check them again when implementing:
 
@@ -79,7 +79,7 @@ If one engine fails or lacks its key, keep the other result available. Show the 
 
 Prefer provider-reported cost. If only usage is returned, estimate from the exact model's current published price and save the source and timestamp. Label estimates explicitly.
 
-Count all inference needed for labels and source selection. Use returned usage for the complete request, including its questions. Do not estimate cost from question count or another provider's tokenizer. Disable hidden retries for this baseline, or instrument and include all attempts and their costs.
+Count all inference needed for labels and source selection. Use returned usage for the complete request, including its questions. Do not estimate cost from question count or another provider's tokenizer. Disable hidden retries, or instrument and include all attempts and their costs.
 
 Report unavailable prices or usage as unavailable. Do not manufacture zero output-token counts if the API does not return them. Extend the receipt contract if necessary, preserving existing LLM records.
 
@@ -97,6 +97,4 @@ Verify the browser with the five bundled PDFs. Save a real comparison export wit
 
 Update setup instructions, dependency lockfile, benchmark commands, and `.env.example`. Explain any added request or evidence-selection stage.
 
-Prepare an ending snapshot named `02_01e` only after the integration is implemented and checked. Do not overwrite the beginning snapshot `02_01b` with the ending implementation.
-
-Keep manual-review routing and threshold tuning for Video 5. This task supports evidence review and does not make hiring decisions.
+This application supports evidence review and does not make hiring decisions.

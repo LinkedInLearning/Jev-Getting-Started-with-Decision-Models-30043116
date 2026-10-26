@@ -16,8 +16,7 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 
-# Local recording outputs
-recordings/
+# Local outputs
 exports/
 runs/
 .streamlit/secrets.toml
