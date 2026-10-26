@@ -2,12 +2,19 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from streamlit.testing.v1 import AppTest
 
 from invoice_intake.core import Result, find_candidates, fingerprint, parse_judgment
 from tests.conftest import answer_payload
 
 ROOT = Path(__file__).parents[1]
+
+
+@pytest.fixture(autouse=True)
+def isolate_local_credentials(monkeypatch):
+    monkeypatch.setattr("dotenv.load_dotenv", lambda *_args, **_kwargs: False)
+    monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
 
 
 def test_initial_screen_is_usable_without_a_key(monkeypatch):
