@@ -41,3 +41,11 @@ The [recording guide](script.html) contains the timed flow, short spoken pointer
 Paste the [short Codex prompt](../../prompts/video-04-codex-prompt.md) during recording. It points to the official documentation and the [detailed integration brief](../../prompts/add-jev.md).
 
 The requested ending state adds LLM structured output, Jev, and Compare both. The same applicant's answers appear side by side, with measured costs and timing in the collapsed analysis.
+
+## Optional path without an LLM key
+
+Learners with only a TypeSafe key can choose the [Jev-only prompt](../../prompts/video-04-jev-only-prompt.md).
+
+It replaces the LLM integration, removes its runtime and key requirements, and uses Jev as the only matching engine. These learners skip the LLM baseline and comparison steps. They still inspect real answers, source evidence, Jev cost, and timing.
+
+The starter interface can be opened without either LLM key. Jev analysis needs the optional integration to be implemented first.

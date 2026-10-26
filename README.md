@@ -3,6 +3,8 @@ This is the repository for the LinkedIn Learning course `Jev: Getting Started wi
 
 The `02_01b` branch contains **RoleMatch**, a working LLM starter for matching resume evidence against a job description. Start with [README_APP.md](README_APP.md) for the quick setup. Jev is added during the lesson using the [Codex prompt](prompts/video-04-codex-prompt.md). Detailed application notes are in [GETTING_STARTED.md](GETTING_STARTED.md).
 
+No OpenAI or OpenRouter key? Choose the [Jev-only prompt](prompts/video-04-jev-only-prompt.md). It replaces the LLM integration and requires only a TypeSafe key.
+
 ![lil-thumbnail-url]
 
 ## Course Description
@@ -29,7 +31,7 @@ To resolve this issue:
 ## Installing
 1. Install Python 3.12 and [uv](https://docs.astral.sh/uv/getting-started/installation/).
 2. Clone branch `02_01b`, then run `uv sync --locked`.
-3. Copy `.env.example` to `.env` and add your OpenRouter or OpenAI API key.
+3. Copy `.env.example` to `.env`. Choose [Jev only or comparison](README_APP.md#2-choose-your-setup) for the required keys and Codex prompt.
 4. Run `uv run streamlit run app.py` and open [localhost:8501](http://localhost:8501).
 
 The app includes three editable job descriptions, five fictional PDF resumes, and a live LLM matching workflow. Upload the PDFs from `output/pdf/resumes/` to see evidence scores and applicant answers. Supporting analysis stays collapsed below the answers. See [GETTING_STARTED.md](GETTING_STARTED.md) for the recording workflow and later Jev integration.

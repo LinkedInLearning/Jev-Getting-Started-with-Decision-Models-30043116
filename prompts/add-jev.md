@@ -2,6 +2,8 @@
 
 This is the implementation brief for the Video 4 Codex prompt. It describes the ending state to build during the lesson. The starter branch remains LLM-only.
 
+This is the comparison path. If the learner has no OpenAI or OpenRouter key, use the [Jev-only prompt](video-04-jev-only-prompt.md) and [Jev-only brief](connect-jev-only.md) instead. That path removes the LLM requirement and skips comparison.
+
 ## Read the application and current documentation
 
 Read `AGENTS.md`, `README_APP.md`, `GETTING_STARTED.md`, `app.py`, and the modules under `ats_match/`.

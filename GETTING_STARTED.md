@@ -6,6 +6,8 @@ A local applicant-review application for Video 4. It uses an LLM with structured
 
 For a short setup checklist, use [README_APP.md](README_APP.md). The [video guide](lessons/04-working-application/script.html) and [Codex prompt](prompts/video-04-codex-prompt.md) describe the lesson.
 
+**No OpenAI or OpenRouter key?** Choose the [Jev-only prompt](prompts/video-04-jev-only-prompt.md). It asks Codex to replace the LLM integration, remove its key requirement, and use only `TYPESAFE_API_KEY`. Skip the LLM configuration and baseline steps below. The starter interface opens without an LLM key; Jev analysis becomes available after that integration is implemented.
+
 ## Start the application
 
 Use Python 3.12 and [uv](https://docs.astral.sh/uv/getting-started/installation/).
@@ -115,6 +117,8 @@ This sends 15 requests: five resumes for each of three repeats. `--dataset small
 The run file preserves frozen inputs, input hashes, prompt version, every answer or error, timing, usage, cost basis, and reference-label disagreements. `runs/`, `.env`, and local exports are ignored by Git.
 
 ## Add Jev during recording
+
+Choose the [comparison prompt](prompts/video-04-codex-prompt.md) for side-by-side results, or the [Jev-only prompt](prompts/video-04-jev-only-prompt.md) to remove the LLM. The Jev-only path reports absolute Jev cost, time, and reference-label agreement without claiming comparative savings.
 
 The `Matcher` protocol exposes `assess(job, resume) -> CandidateResult`.
 

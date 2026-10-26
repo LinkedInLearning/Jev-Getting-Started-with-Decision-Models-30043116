@@ -46,6 +46,8 @@ Read [GETTING_STARTED.md](GETTING_STARTED.md) for setup, the inference boundary,
 
 The learner quickstart is [README_APP.md](README_APP.md). Video 4 has a [timed recording guide](lessons/04-working-application/script.html), a [short Codex prompt](prompts/video-04-codex-prompt.md), and a [Jev implementation brief](prompts/add-jev.md) for paired outputs and measurements.
 
+An optional [Jev-only prompt](prompts/video-04-jev-only-prompt.md) supports learners without an OpenAI or OpenRouter key. It replaces the LLM integration using only a TypeSafe key and skips comparative results.
+
 Three built-in job openings and five fictional one-page PDF resumes are ready for recording. The PDFs are in `output/pdf/resumes/`, with a ZIP bundle in `output/pdf/applicant-resumes.zip`. The interface has no prefilled or simulated results.
 
 Live OpenRouter and browser checks passed on 26 October 2026. The five-PDF run cost $0.0040656, with 13.48 seconds total time and a 2.63-second median request. Requirement-label agreement was 18 of 20. Additional evidence-check agreement was 8 of 10. See the [baseline notes](lessons/04-working-application/llm-baseline.md) for preserved disagreements and the earlier short-text check.

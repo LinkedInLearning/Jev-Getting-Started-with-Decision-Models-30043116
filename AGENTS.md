@@ -10,6 +10,7 @@
 - Keep planning HTML in one continuous column, with short bullets and no decorative labels.
 - Videos two and three introduce primitives with small examples. The user selected ATS matching for videos four through six on 26 October 2026.
 - The ATS starter is on branch `02_01b`. It uses an LLM only. Add Jev during the recording, not in this starter.
+- Learners choose the comparison prompt or the optional Jev-only prompt. The Jev-only implementation removes LLM runtime and key requirements. It needs only a TypeSafe key and does not show comparative savings.
 - The official repository title supersedes the earlier working title in the research document.
 
 ## Teaching and writing

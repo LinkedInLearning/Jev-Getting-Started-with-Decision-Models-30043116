@@ -18,6 +18,7 @@
 <p class="meta">Target: 4:50. Hands-on recording. Starter branch: <code>02_01b</code>.</p>
 <p><strong>Outcome:</strong> Add a second matching engine and inspect a fair comparison.</p>
 <p><strong>Proof:</strong> One exported comparison with the same input snapshot, both answers, and both sets of measurements.</p>
+<p><strong>Only have a Jev key?</strong> Choose the <a href="../../prompts/video-04-jev-only-prompt.md">Jev-only prompt</a>. It removes the LLM requirement. Skip the LLM baseline and comparison steps, then inspect Jev answers and measurements.</p>
 
 <section class="lecture-section" id="intro" data-nav-title="Introduce the task" data-time="0:00-0:20">
 <h2>Introduce the task</h2>
@@ -39,6 +40,7 @@
 <div class="spoken">
 <p>“This branch gives us a working application using LLM structured output.”</p>
 <p>“Follow the app README and pause here to run it locally.”</p>
+<p>“Without an LLM key, choose the Jev-only prompt in the README.”</p>
 </div>
 <details>
 <summary>Commands to show</summary>
@@ -49,7 +51,7 @@ git switch 02_01b
 uv sync --locked
 cp .env.example .env
 uv run streamlit run app.py</pre>
-<p>Set <code>OPENROUTER_API_KEY</code> after copying the example and before starting the app. Keep the key out of the recording. Do not overwrite an existing <code>.env</code>.</p>
+<p>For the comparison path, set <code>OPENROUTER_API_KEY</code> after copying the example. For Jev only, leave both LLM keys blank and follow the optional prompt. The starter interface opens without keys; analysis needs the chosen engine to be configured. Keep keys out of the recording. Do not overwrite an existing <code>.env</code>.</p>
 <p>Python 3.12, Git, uv, Codex, and provider accounts are prepared before filming. Windows PowerShell uses <code>Copy-Item .env.example .env</code>.</p>
 <p>Open <a href="http://localhost:8501">localhost:8501</a>. Installation and startup waits can be edited out.</p>
 </div>
@@ -97,6 +99,7 @@ uv run streamlit run app.py</pre>
 <details>
 <summary>Prompt to paste into Codex</summary>
 <div>
+<p>Choose this comparison prompt when you have an LLM key. For a Jev-only application, use the separate prompt below.</p>
 <pre id="codex-prompt">Read https://docs.typesafe.ai/llms.txt and its Python SDK documentation.
 
 Follow prompts/add-jev.md to add Jev as a second matching engine in this ATS.
@@ -108,6 +111,24 @@ Compare both must use the same job, resumes, criteria, and scoring rules. Show b
 Preserve source evidence. Run the checks and update the setup instructions. Keep API keys in .env.</pre>
 <p>The same text is in <a href="../../prompts/video-04-codex-prompt.md">the short prompt file</a>. The detailed acceptance criteria are in <a href="../../prompts/add-jev.md">prompts/add-jev.md</a>.</p>
 <p>Add <code>TYPESAFE_API_KEY</code> to the local <code>.env</code> off camera after the integration supports it. Restart Streamlit so the SDK and modules load cleanly.</p>
+</div>
+</details>
+<details>
+<summary>Optional prompt: Jev only, no LLM key</summary>
+<div>
+<p>This path needs only a TypeSafe API key. It replaces the LLM integration and has no side-by-side comparison.</p>
+<pre id="jev-only-prompt">Read https://docs.typesafe.ai/llms.txt and its Python SDK documentation.
+
+Follow prompts/connect-jev-only.md to replace the LLM matching engine with Jev.
+
+I do not have an OpenAI or OpenRouter API key. Require only TYPESAFE_API_KEY. Remove LLM provider configuration, runtime calls, and dependencies used only by the LLM integration. Do not add an LLM fallback or comparison mode.
+
+Preserve the job descriptions, PDF uploads, criteria, scoring rules, and source evidence. Show Jev answers and actual cost, time, failures, and reference agreement in the collapsed analysis.
+
+Verify the app starts and analyzes with OPENAI_API_KEY and OPENROUTER_API_KEY unset. Update the setup instructions and run the checks. Keep keys in .env.</pre>
+<p>Copy from <a href="../../prompts/video-04-jev-only-prompt.md">the Jev-only prompt file</a>. Its full requirements are in <a href="../../prompts/connect-jev-only.md">the Jev-only implementation brief</a>.</p>
+<p>Leave both LLM keys blank. After Codex adds the Jev integration, configure <code>TYPESAFE_API_KEY</code>, restart Streamlit, and analyze the same PDFs.</p>
+<p>Show absolute Jev cost, time, and reference agreement. There is no measured LLM comparison for this path.</p>
 </div>
 </details>
 <details>
@@ -193,9 +214,10 @@ Preserve source evidence. Run the checks and update the setup instructions. Keep
 <p>Audience: learners who have completed the playground and question-type lessons. They are using Codex rather than writing the integration from memory.</p>
 <p>Prepare Git, Python 3.12, uv, Codex, both provider accounts, the five PDFs, and the local keys before filming. Validate the short prompt in a rehearsal.</p>
 <p>Keep <code>02_01b</code> as the beginning snapshot. Prepare <code>02_01e</code> after the ending implementation is checked. Use the verified ending snapshot as a recording backup.</p>
-<p>The spoken pointers contain 182 words, about 1:25 at 130 words per minute. Budget up to 2:00 with natural expansion, 2:20 for screen actions, a five-second learner pause, and a 25-second buffer. Total: 4:50. Installation and code-generation waits are edited out.</p>
+<p>Budget up to 2:00 for the short spoken pointers with natural expansion, 2:20 for screen actions, a five-second learner pause, and a 25-second buffer. Total: 4:50. Installation and code-generation waits are edited out.</p>
 <p>Do not read the full prompt or implementation brief aloud. Show the documentation link and explain the requested behavior. Edit installation and code-generation waits. Present saved API runs as saved runs.</p>
 <p>Keep routing policies, confidence thresholds, and fallback behavior for Video 5. This video connects the engine and compares the output.</p>
+<p>The main recording follows the comparison path. Learners using the Jev-only prompt skip the LLM baseline and paired results. They can still complete the integration and inspect Jev output without an OpenAI or OpenRouter key.</p>
 <p>Sources checked on 26 October 2026: <a href="https://docs.typesafe.ai/llms.txt">documentation index</a>, <a href="https://docs.typesafe.ai/sdk/python">Python SDK</a>, <a href="https://docs.typesafe.ai/sdk/python/api/types/responses">response metadata</a>, <a href="https://docs.typesafe.ai/models">models and pricing</a>, and <a href="https://docs.typesafe.ai/sdk/python/api/retries">retry controls</a>.</p>
 </div>
 </details>
@@ -205,7 +227,8 @@ Preserve source evidence. Run the checks and update the setup instructions. Keep
 <div>
 <p>Technical review: checked the starter commands from a fresh GitHub clone. Branch switching, locked dependency installation, PDF loading, and server startup passed. Checked app labels, source files, measurement notes, and official TypeSafe documentation.</p>
 <p>Revisions: preserved the existing categorical outputs, kept coverage distinct from probability, and included source-selection work in the comparison requirements.</p>
-<p>Source review: local guide links resolve. The embedded prompt matches the prompt file. The timing allocation totals 4:50. The structural checker passed.</p>
+<p>Optional-path review: the Jev-only prompt explicitly removes LLM runtime calls and key checks. It uses a separate implementation brief and requires a TypeSafe key. The main comparison path remains available.</p>
+<p>Source review: local guide links resolve. Both embedded prompts match their prompt files. The timing allocation totals 4:50. The structural checker passed.</p>
 <p>Visual limitation: the in-app browser blocked the local HTML URL because it permits only HTTP and HTTPS. Browser rendering and expanding notes were not visually checked.</p>
 <p>Remaining limit: the Jev integration is specified for the recording, not implemented or benchmarked in this starter. Rehearse the full integration before filming measured results.</p>
 </div>
