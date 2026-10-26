@@ -1,14 +1,13 @@
 [project]
-name = "rolematch"
+name = "evidence-check"
 version = "0.1.0"
-description = "Resume-to-job evidence matching with structured AI outputs."
+description = "Test claim verification against a labeled source collection."
 requires-python = ">=3.11,<3.14"
 dependencies = [
   "streamlit>=1.50,<2",
-  "httpx>=0.28,<1",
   "pydantic>=2.11,<3",
   "python-dotenv>=1.1,<2",
-  "pypdf>=6,<7",
+  "typesafe-sdk>=0.7.5,<0.8",
 ]
 
 [dependency-groups]

@@ -1,351 +1,313 @@
-"""RoleMatch applicant review. Run: uv run streamlit run app.py."""
+"""Evidence Check web application."""
 
 from __future__ import annotations
 
 import base64
 import html
-from datetime import datetime
+import json
+import os
+from pathlib import Path
 
 import streamlit as st
-from pydantic import ValidationError
+from dotenv import load_dotenv
 
-from ats_match.data import ROOT, application_reference, load_openings, make_job, read_resume
-from ats_match.domain import DEPTH_LEVELS, STATUS_LABELS, fingerprint
-from ats_match.llm import LLMMatcher, LLMSettings
-from ats_match.workflow import evaluate, results_csv, run_matching
+from evidence_check.domain import load_pack
+from evidence_check.engine import DEFAULT_MODEL, PRICE_SOURCE, QUESTION_SPEC, JevVerifier
+from evidence_check.workflow import is_stale, metrics, outcome, run_pack
 
-st.set_page_config(page_title="Applications | RoleMatch", page_icon="▦", layout="wide")
+ROOT = Path(__file__).parent
+load_dotenv(ROOT / ".env", override=True)
+st.set_page_config(page_title="Evidence Check", page_icon="▣", layout="wide")
 
-
-def styles():
-    encoded = base64.b64encode((ROOT / "assets/app/host-grotesk.woff2").read_bytes()).decode()
-    st.html(
-        "<style>@font-face{font-family:Host;src:url(data:font/woff2;base64,"
-        + encoded
-        + ") format('woff2');font-display:swap;}"
-        + (ROOT / "ats_match/style.css").read_text()
-        + "</style>"
-    )
-
-
-def badge(text, status="neutral"):
-    return f'<span class="status {html.escape(status)}">{html.escape(str(text))}</span>'
-
-
-def money(value):
-    return "Unavailable" if value is None else f"${value:.6f}"
-
-
-def applicant_name(resume):
-    return resume.label.replace("_", " ").replace("-", " ")
-
-
-def candidate_table(run):
-    names = {r.id: applicant_name(r) for r in run.resumes}
-    rows = []
-    production = {"yes": "Described", "not_stated": "Not stated", "unclear": "Unclear"}
-    for result in run.results:
-        name = html.escape(names[result.resume_id])
-        if result.assessment is None:
-            rows.append(
-                f'<tr><td class="candidate-name">{name}</td><td colspan="3">{badge("Analysis failed", "unclear")}</td></tr>'
-            )
-            continue
-        answer = result.assessment
-        direct = sum(m.status.value == "direct" for m in answer.matches)
-        percentage = round(100 * direct / len(run.job.requirements))
-        meter = f'<div class="score"><strong>{percentage}%</strong><progress value="{percentage}" max="100" aria-label="Criteria with direct evidence">{percentage}%</progress><small>{direct} of {len(run.job.requirements)} criteria</small></div>'
-        state = answer.production_api.status
-        rows.append(
-            f'<tr><td class="candidate-name">{name}</td>'
-            f"<td>{meter}</td><td>{badge(production[state], 'direct' if state == 'yes' else state)}</td>"
-            f'<td><strong>{answer.backend_depth.level}</strong><span class="out-of"> / 2</span></td></tr>'
-        )
-    st.html(
-        '<div class="table-scroll"><table class="candidate-table"><thead><tr>'
-        "<th>Applicant</th><th>Evidence match</th><th>Production API delivery</th><th>Backend delivery depth</th>"
-        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>"
-    )
-
-
-def answers(job, assessment):
-    by_id = {m.requirement_id: m for m in assessment.matches}
-    for requirement in job.requirements:
-        answer = by_id[requirement.id]
-        st.html(
-            '<div class="answer-row"><span>'
-            + html.escape(requirement.text)
-            + "</span>"
-            + badge(STATUS_LABELS[answer.status.value], answer.status.value)
-            + "</div>"
-        )
-
-
-def analysis_details(run, selected):
-    result = next(r for r in run.results if r.resume_id == selected.id)
-    summary = run.summary
-    with st.expander("Analysis details"):
-        if result.assessment:
-            st.markdown("#### Supporting evidence")
-            for requirement in run.job.requirements:
-                answer = next(
-                    m for m in result.assessment.matches if m.requirement_id == requirement.id
-                )
-                st.markdown(f"**{requirement.text}**")
-                if answer.evidence_line_ids:
-                    for line in answer.evidence_line_ids:
-                        st.html(
-                            f'<div class="source-line"><span>{line}</span>{html.escape(selected.lines[line])}</div>'
-                        )
-                else:
-                    st.caption("No supporting evidence is stated in this resume.")
-            st.caption(
-                f"Backend delivery depth {result.assessment.backend_depth.level}: {DEPTH_LEVELS[result.assessment.backend_depth.level]}"
-            )
-            extra_sources = list(
-                dict.fromkeys(
-                    result.assessment.production_api.evidence_line_ids
-                    + result.assessment.backend_depth.evidence_line_ids
-                )
-            )
-            for line in extra_sources:
-                st.html(
-                    f'<div class="source-line"><span>{line}</span>{html.escape(selected.lines[line])}</div>'
-                )
-        st.markdown("#### Cost and speed")
-        cols = st.columns(4)
-        cols[0].metric("Total API cost", money(summary["total_cost_usd"]))
-        cols[1].metric("Total time", f"{summary['wall_seconds']:.2f}s")
-        cols[2].metric(
-            "Input tokens",
-            f"{summary['input_tokens']:,}"
-            if summary["input_tokens"] is not None
-            else "Unavailable",
-        )
-        cols[3].metric(
-            "Output tokens",
-            f"{summary['output_tokens']:,}"
-            if summary["output_tokens"] is not None
-            else "Unavailable",
-        )
-        st.caption(
-            f"{summary['api_calls']} requests · {summary['failed']} failed · Median request {summary['median_call_seconds']:.2f}s · Cost basis: {summary['cost_basis']}"
-        )
-        if summary["cost_basis"] == "estimated":
-            st.caption(
-                "Cost uses returned token counts and a saved price snapshot. It is an estimate."
-            )
-        elif summary["total_cost_usd"] is None:
-            st.caption(
-                "Complete billing data was unavailable. Missing costs are not counted as zero."
-            )
-        st.markdown("#### Matching engine")
-        st.write(
-            f"LLM with structured outputs · {result.receipt.provider} · {result.receipt.actual_model or result.receipt.requested_model}"
-        )
-        st.caption(f"Run {run.id} · Input snapshot {run.input_hash[:12]} · {run.prompt_version}")
-        reference = application_reference(run.job, run.resumes)
-        if reference:
-            quality = evaluate(run, *reference)
-            extra = quality["additional_checks"]
-            st.write(
-                f"Reference agreement: {quality['correct']}/{quality['total']} requirement labels · {extra['correct']}/{extra['total']} additional checks"
-            )
-            st.caption(
-                "Reference labels apply only to the unchanged fictional applications. This small set is not a production accuracy estimate."
-            )
-            disagreements = quality["disagreements"] + extra["disagreements"]
-            if disagreements:
-                st.json(disagreements)
-        a, b = st.columns(2)
-        a.download_button(
-            "Export results",
-            results_csv(run),
-            "applicant-evidence.csv",
-            "text/csv",
-            use_container_width=True,
-        )
-        b.download_button(
-            "Export analysis",
-            run.model_dump_json(indent=2),
-            f"analysis-{run.id}.json",
-            "application/json",
-            use_container_width=True,
-        )
-        with st.expander("Request receipts"):
-            st.json([r.receipt.model_dump(mode="json") for r in run.results])
-
-
-styles()
-st.html(
-    '<header class="app-header"><div class="brand"><span class="brand-icon">▦</span>RoleMatch</div><span class="workspace-name">Applications</span></header>'
+font = base64.b64encode((ROOT / "assets/app/host-grotesk.woff2").read_bytes()).decode()
+css = (ROOT / "evidence_check/style.css").read_text()
+st.markdown(
+    f"<style>@font-face {{font-family: Host; src: url(data:font/woff2;base64,{font});}}{css}</style>",
+    unsafe_allow_html=True,
 )
-st.title("Review applications")
-st.write("Match applicant experience to the requirements of an open role.")
 
-try:
-    settings = LLMSettings.from_env()
-except (ValueError, ValidationError):
-    st.error("The matching service configuration is invalid. Check the local .env settings.")
-    st.stop()
+pack = load_pack(ROOT / "data/reference_pack.json")
+api_key = os.getenv("TYPESAFE_API_KEY", "").strip()
+configured_model = os.getenv("TYPESAFE_MODEL", DEFAULT_MODEL)
+connection = "API key configured" if api_key else "API key required"
+dot_class = "dot connected" if api_key else "dot"
+st.markdown(
+    f'<div class="app-header"><div class="brand">Evidence Check</div><div class="connection"><span class="{dot_class}"></span>{connection}</div></div>',
+    unsafe_allow_html=True,
+)
+st.title("Review claims before release")
+st.write("Check whether product claims are supported by their cited sources.")
+st.caption(
+    f"{len(pack.cases)} labeled checks · {len(pack.sources)} source passages · TypeSafe only"
+)
 
-openings = load_openings()
-opening_by_id = {o.id: o for o in openings}
-left, right = st.columns([1, 1], gap="large")
-with left:
-    st.markdown("### Job description")
-    opening_id = st.selectbox(
-        "Job opening",
-        options=list(opening_by_id),
-        format_func=lambda oid: opening_by_id[oid].job.title,
+with st.expander("Run settings"):
+    settings_left, settings_right = st.columns([1, 1])
+    with settings_left:
+        model = st.text_input("Jev model", value=configured_model)
+        st.caption("A versioned model makes comparisons easier to reproduce.")
+    with settings_right:
+        floor = st.slider("Minimum confidence for a ready verdict", 0.0, 1.0, 0.8, 0.05)
+        st.caption("Example policy. This changes the action, not the saved model answers.")
+    st.caption("Changing the model requires a new run. Threshold changes do not call the API.")
+
+if not api_key:
+    st.info(
+        "Add TYPESAFE_API_KEY to .env, then refresh. You can inspect every claim and source before running Jev."
     )
-    opening = opening_by_id[opening_id]
-    st.caption(f"{opening.department} · {opening.location} · {opening.employment_type}")
-    description = st.text_area(
-        "Job description",
-        value=opening.job.description,
-        height=375,
-        key=f"description_{opening_id}",
-        label_visibility="collapsed",
+
+run_button, clear_button, _ = st.columns([1.25, 1, 3])
+with run_button:
+    execute = st.button(
+        "Run all checks", type="primary", width="stretch", disabled=not api_key or not model.strip()
     )
-    with st.expander("Matching criteria"):
-        st.caption(
-            "Evidence match uses these criteria. Update them when you change the job requirements."
-        )
-        title = st.text_input("Job title", value=opening.job.title, key=f"title_{opening_id}")
-        requirement_text = st.text_area(
-            "Criteria, one per line",
-            value="\n".join(r.text for r in opening.job.requirements),
-            height=145,
-            key=f"criteria_{opening_id}",
-        )
-with right:
-    st.markdown("### Applicants")
-    st.write("Upload resumes to review for this role.")
-    uploads = st.file_uploader(
-        "Upload resumes",
-        type=["pdf", "txt"],
-        accept_multiple_files=True,
-        label_visibility="collapsed",
-        help="Up to 10 PDF or text files. Maximum 2 MB and 12 pages per file.",
-    )
-    resumes = []
-    upload_errors = []
-    if len(uploads) > 10:
-        upload_errors.append("Upload at most 10 resumes at a time.")
-    else:
-        for i, upload in enumerate(uploads, 1):
-            try:
-                resumes.append(read_resume(upload.name, upload.getvalue(), i))
-            except (ValueError, ValidationError) as exc:
-                upload_errors.append(f"{upload.name}: {exc}")
-    for error in upload_errors:
-        st.error(error)
-    if resumes:
-        st.caption(
-            f"{len(resumes)} application{'s' if len(resumes) != 1 else ''} ready for analysis."
-        )
-    else:
-        st.html(
-            '<div class="upload-note"><strong>PDF or text resumes</strong><p>Add up to 10 applications. Each file can be up to 2 MB.</p></div>'
-        )
-    st.caption("Resume text is sent to the configured AI provider when you analyze applications.")
+with clear_button:
+    if st.button("Clear results", width="stretch", disabled="run" not in st.session_state):
+        st.session_state.pop("run", None)
+        st.session_state.pop("previous_run", None)
+        st.rerun()
 
-try:
-    job = make_job(title, description, requirement_text)
-except (ValidationError, ValueError):
-    st.error("Enter a job title, a complete description, and 1 to 8 matching criteria.")
-    job = None
-
-if not settings.api_key:
-    st.warning("The matching service needs an API key. Add it to the local .env file.")
-
-if st.button(
-    "Analyze applications",
-    type="primary",
-    disabled=not (settings.api_key and job and resumes and not upload_errors),
-    use_container_width=False,
-):
-    matcher = LLMMatcher(settings)
-    progress = st.progress(0, text="Reading applications...")
+if execute:
+    verifier = JevVerifier(api_key, model.strip())
     try:
-        run = run_matching(
-            job,
-            resumes,
-            matcher,
-            progress=lambda done, total, name: progress.progress(
-                done / total, text=f"Analyzing application {done} of {total}"
-            ),
-        )
+        with st.spinner("Checking claims against their sources..."):
+            new_run = run_pack(pack, verifier)
+        if st.session_state.get("run"):
+            st.session_state["previous_run"] = st.session_state["run"]
+        st.session_state["run"] = new_run
     finally:
-        matcher.close()
-        progress.empty()
-    st.session_state.setdefault("application_runs", []).append(run)
+        verifier.close()
 
-st.divider()
-st.markdown("### Results")
-all_runs = st.session_state.get("application_runs", [])
-active_hash = fingerprint(job, resumes) if job else None
-matching_runs = [run for run in all_runs if run.input_hash == active_hash]
-if not matching_runs:
-    if all_runs and resumes:
-        st.info("The job or applications changed. Analyze again to refresh the results.")
-    else:
-        st.html(
-            '<div class="empty-results"><strong>Your applicant review will appear here.</strong><p>Select a role, upload resumes, then analyze the applications.</p></div>'
-        )
-else:
-    by_run = {run.id: run for run in reversed(matching_runs)}
-
-    def run_name(rid):
-        item = by_run[rid]
-        time = datetime.fromisoformat(item.started_at).strftime("%H:%M:%S UTC")
-        return f"LLM structured output · {len(item.resumes)} applicants · {time}"
-
-    run_id = st.selectbox(
-        "Analysis run", list(by_run), format_func=run_name, key=f"run_{active_hash}"
+run = st.session_state.get("run")
+stale = bool(run and is_stale(pack, model.strip(), run))
+if stale:
+    st.warning(
+        "These results use a different model or reference pack. Run the checks again before using the comparison."
     )
-    active_run = by_run[run_id]
-    summary = active_run.summary
-    cost_kind = {
-        "reported": "Reported API cost",
-        "estimated": "Estimated API cost",
-        "unavailable": "API cost",
-    }[summary["cost_basis"]]
-    st.html(
-        '<div class="result-summary"><span><strong>'
-        + str(summary["succeeded"])
-        + "</strong> applications analyzed</span><span>"
-        + f"{summary['wall_seconds']:.2f}s total"
-        + "</span><span>"
-        + html.escape(cost_kind + ": " + money(summary["total_cost_usd"]))
-        + "</span></div>"
+
+if run and not stale:
+    summary = metrics(pack, run, floor)
+    columns = st.columns(4)
+    columns[0].metric("Verdict agreement", f"{summary['label_agreement']}/{summary['total']}")
+    columns[1].metric(
+        "Evidence ID agreement", f"{summary['evidence_agreement']}/{summary['evidence_total']}"
     )
-    candidate_table(active_run)
+    columns[2].metric("Unexpected ready verdicts", summary["unexpected_releases"])
+    columns[3].metric("Sent to review", f"{summary['reviews']}/{summary['total']}")
     st.caption(
-        "Evidence match counts criteria with direct supporting evidence. It is not a hiring recommendation."
+        "API failures count as failed checks. A valid source ID does not prove that its passage supports a claim."
     )
-    for result in active_run.results:
-        if result.error:
-            resume = next(r for r in active_run.resumes if r.id == result.resume_id)
-            st.error(f"{applicant_name(resume)}: {result.error}")
-    completed = [r for r in active_run.results if r.assessment]
-    if completed:
-        st.markdown("### Applicant details")
-        by_id = {r.id: r for r in active_run.resumes}
-        selected_id = st.selectbox(
-            "Applicant",
-            [r.resume_id for r in completed],
-            format_func=lambda rid: applicant_name(by_id[rid]),
-            key=f"applicant_{active_run.id}",
-        )
-        selected = by_id[selected_id]
-        assessment = next(r.assessment for r in completed if r.resume_id == selected_id)
-        answers(active_run.job, assessment)
-        analysis_details(active_run, selected)
-    else:
-        analysis_details(active_run, active_run.resumes[0])
+else:
+    st.markdown(
+        '<div class="empty">No current results. Expected labels are available below. Actual verdicts appear only after a live run.</div>',
+        unsafe_allow_html=True,
+    )
 
-st.html(
-    '<footer class="app-footer">Review the source evidence before making a hiring decision.</footer>'
+checks_tab, sources_tab = st.tabs(["Checks", "Source library"])
+with checks_tab:
+    results = {item.case_id: item for item in run.results} if run and not stale else {}
+    rows = []
+    for case in pack.cases:
+        result = results.get(case.id)
+        rows.append(
+            {
+                "ID": case.id,
+                "Check": case.title,
+                "Expected": case.expected.replace("_", " "),
+                "Actual": "API error"
+                if result and result.error
+                else result.verdict.replace("_", " ")
+                if result and result.verdict
+                else "Not run",
+                "Evidence": result.evidence_id if result else "Not run",
+                "Agreement": "Fail"
+                if result
+                and (
+                    result.error
+                    or result.verdict != case.expected
+                    or result.evidence_id not in case.expected_evidence
+                    or result.validation != case.expected_validation
+                )
+                else "Pass"
+                if result
+                else "Pending",
+                "Action": outcome(result, floor).title() if result else "Pending",
+            }
+        )
+    st.dataframe(rows, hide_index=True, width="stretch", height=460)
+    selected_id = st.selectbox(
+        "Inspect a check",
+        [case.id for case in pack.cases],
+        format_func=lambda key: next(
+            f"{case.id} · {case.title}" for case in pack.cases if case.id == key
+        ),
+    )
+    case = next(case for case in pack.cases if case.id == selected_id)
+    result = results.get(case.id)
+    st.markdown(f'<div class="claim">{html.escape(case.claim)}</div>', unsafe_allow_html=True)
+    left, right = st.columns(2, gap="large")
+    with left:
+        st.subheader("Cited sources")
+        if not case.source_ids:
+            st.caption(
+                "No source was supplied. Code sends this check to review without an API call."
+            )
+        for source_id in case.source_ids:
+            source = pack.source_map[source_id]
+            st.markdown(
+                f'<div class="source"><strong>{html.escape(source.id)} · {html.escape(source.title)}</strong>{html.escape(source.text)}</div>',
+                unsafe_allow_html=True,
+            )
+        if case.quote:
+            st.caption("Alleged verbatim quote")
+            st.write(case.quote)
+    with right:
+        st.subheader("Expected and actual")
+        expected_column, actual_column = st.columns(2)
+        expected_column.markdown(
+            f'<div class="result"><span>Expected verdict</span><strong>{case.expected.replace("_", " ").title()}</strong><br>Source: {html.escape(" or ".join(case.expected_evidence))}</div>',
+            unsafe_allow_html=True,
+        )
+        actual_label = (
+            "API error"
+            if result and result.error
+            else result.verdict.replace("_", " ").title()
+            if result and result.verdict
+            else "Not run"
+        )
+        actual_column.markdown(
+            f'<div class="result"><span>Actual verdict</span><strong>{actual_label}</strong><br>Source: {html.escape(result.evidence_id or "none") if result else "Not run"}</div>',
+            unsafe_allow_html=True,
+        )
+        st.caption(case.note)
+        if result:
+            action = outcome(result, floor)
+            st.markdown(
+                f'<div class="badge {action}">{action.title()}</div>', unsafe_allow_html=True
+            )
+            if result.error:
+                st.error(
+                    f"Request failed ({result.error}). No judgment was returned. This check counts as a failure."
+                )
+            elif result.validation != "ok":
+                st.write(
+                    "No cited source was supplied."
+                    if result.validation == "no_source"
+                    else "The alleged verbatim quote was not found in the cited source."
+                )
+                st.caption("Deterministic source check. No model call and no model confidence.")
+            elif result.judgment:
+                st.caption(
+                    f"Verdict confidence {result.judgment.confidence:.2f} · Evidence confidence {result.judgment.evidence_confidence:.2f}"
+                )
+                st.bar_chart(result.judgment.probabilities, color="#546c5e", height=190)
+        with st.expander("Question and expected labels"):
+            st.write(QUESTION_SPEC["relation"]["instructions"])
+            st.json(QUESTION_SPEC["relation"]["criteria"])
+            st.caption("Expected labels are test data. They are never included in the API request.")
+            if case.reverse_options:
+                st.write("This case reverses the order of both Choice option lists.")
+
+with sources_tab:
+    st.caption(pack.description)
+    for source in pack.sources:
+        st.markdown(
+            f'<div class="source"><strong>{html.escape(source.id)} · {html.escape(source.title)}</strong>{html.escape(source.text)}</div>',
+            unsafe_allow_html=True,
+        )
+
+if run and not stale:
+    with st.expander("Analysis details"):
+        st.subheader("Run receipt")
+        columns = st.columns(4)
+        columns[0].metric("Wall time", f"{run.seconds:.2f} s")
+        columns[1].metric("API requests", summary["api_requests"])
+        columns[2].metric("API errors", summary["errors"])
+        cost_prefix = "" if summary["cost_complete"] else "Observed "
+        cost_display = (
+            f"{cost_prefix}${summary['estimated_cost_usd']:.6f}"
+            if summary["known_cost_records"]
+            else "Unavailable"
+        )
+        columns[3].metric("Estimated API cost", cost_display)
+        input_usage = (
+            f"{summary['input_tokens']:,}"
+            if summary["input_complete"]
+            else f"{summary['input_tokens']:,} observed, incomplete"
+        )
+        output_usage = (
+            f"{summary['output_tokens']:,}"
+            if summary["output_complete"]
+            else "Unavailable for the full run"
+        )
+        st.caption(
+            f"Input tokens: {input_usage}. Output tokens: {output_usage}. Automatic retries are disabled."
+        )
+        st.caption(
+            f"Pricing estimate: {PRICE_SOURCE}. Output tokens are free. This is not an invoice."
+        )
+        if (
+            not summary["input_complete"]
+            or not summary["output_complete"]
+            or not summary["cost_complete"]
+        ):
+            st.warning(
+                "Some requests lack usage or a known price. Observed totals are incomplete. Failed requests may still be billable."
+            )
+        models = sorted({result.judgment.model for result in run.results if result.judgment})
+        st.caption(
+            f"Started {run.started_at}. Resolved models: {', '.join(models) or 'none returned'}. Live results, no replay cache."
+        )
+        st.subheader("What the checks measure")
+        st.write(
+            f"Semantic verdict agreement: {summary['semantic_agreement']}/{summary['semantic_total']}. Source precheck agreement: {summary['validation_agreement']}/{summary['validation_total']}."
+        )
+        st.caption(
+            "The main verdict total includes code checks. Semantic agreement excludes those two prechecks. Evidence ID agreement compares against labeled relevant passages, not ID existence alone."
+        )
+        st.dataframe(
+            [
+                {"Expected": expected, **actuals}
+                for expected, actuals in summary["confusion"].items()
+            ],
+            hide_index=True,
+            width="stretch",
+        )
+        st.subheader("Regression pairs")
+        st.dataframe(summary["regressions"], hide_index=True, width="stretch")
+        st.caption(
+            "Changed answers are a regression signal. Consistency on a few cases does not prove robustness. Keep the original expected labels."
+        )
+        previous = st.session_state.get("previous_run")
+        if previous and previous.fingerprint == run.fingerprint:
+            old = {item.case_id: item for item in previous.results}
+            changed = [
+                item.case_id
+                for item in run.results
+                if (item.verdict, item.evidence_id, item.error)
+                != (
+                    old[item.case_id].verdict,
+                    old[item.case_id].evidence_id,
+                    old[item.case_id].error,
+                )
+            ]
+            st.write(f"Changed since the previous identical run: {', '.join(changed) or 'none'}.")
+        st.download_button(
+            "Download run JSON",
+            json.dumps(
+                {
+                    "reference_pack": pack.model_dump(),
+                    "run": run.model_dump(),
+                    "policy_confidence_floor": floor,
+                    "metrics": summary,
+                },
+                indent=2,
+            ),
+            file_name="evidence-check-results.json",
+            mime="application/json",
+        )
+
+st.markdown(
+    '<div class="app-footer">Evidence Check · Source-based judgments for human review. Ready is a local status, no content is published.</div>',
+    unsafe_allow_html=True,
 )
