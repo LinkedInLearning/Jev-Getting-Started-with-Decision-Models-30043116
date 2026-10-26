@@ -74,3 +74,22 @@ def test_failed_run_cost_is_unavailable_not_zero(monkeypatch):
     assert not app.exception
     cost_metric = next(metric for metric in app.metric if metric.label == "Estimated API cost")
     assert cost_metric.value == "Unavailable"
+
+
+def test_completed_run_can_be_cleared_immediately_without_another_model_call(monkeypatch):
+    verifier = ReferenceVerifier()
+    monkeypatch.setenv("TYPESAFE_API_KEY", "local-test-key")
+    monkeypatch.setattr("evidence_check.engine.JevVerifier", lambda api_key, model: verifier)
+    app = AppTest.from_file(str(APP), default_timeout=30).run()
+    assert app.button[1].label == "Clear results" and app.button[1].disabled
+    app.button[0].click().run()
+    assert not app.exception
+    assert app.metric[0].value == "12/12"
+    assert len(verifier.calls) == 10
+    clear = next(button for button in app.button if button.label == "Clear results")
+    assert not clear.disabled
+    clear.click().run()
+    assert not app.exception
+    assert not app.metric
+    assert set(app.dataframe[0].value["Actual"]) == {"Not run"}
+    assert len(verifier.calls) == 10

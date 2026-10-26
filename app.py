@@ -77,6 +77,7 @@ if execute:
         st.session_state["run"] = new_run
     finally:
         verifier.close()
+    st.rerun()
 
 run = st.session_state.get("run")
 stale = bool(run and is_stale(pack, model.strip(), run))
