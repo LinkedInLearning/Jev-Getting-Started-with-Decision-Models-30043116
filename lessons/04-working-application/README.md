@@ -22,6 +22,8 @@ During recording, add a new inference implementation at `Matcher.assess(job, res
 
 Read [GETTING_STARTED.md](../../GETTING_STARTED.md). Start with `uv run streamlit run app.py`.
 
+Learners can follow [README_APP.md](../../README_APP.md) for the clone, branch, setup, and run commands.
+
 Capture the LLM baseline with `uv run python -m ats_match.benchmark --dataset applications --out runs/ats-applications-baseline.json --repeats 3`.
 
 During recording, add the LLM/Jev selector alongside the second engine. Compare actual latency, cost with its source, failed requests, requirement-label agreement, and additional evidence-check agreement. No comparative savings are assumed.
@@ -34,4 +36,8 @@ Inspect a requirement label beside its original resume evidence. Distinguish not
 
 Show the finished app, inspect the LLM call, add the new engine with Codex, and rerun the same examples. Prepare both implementations before recording.
 
-Add the complete teaching script as `script.html` in this directory.
+The [recording guide](script.html) contains the timed flow, short spoken pointers, and learner check.
+
+Paste the [short Codex prompt](../../prompts/video-04-codex-prompt.md) during recording. It points to the official documentation and the [detailed integration brief](../../prompts/add-jev.md).
+
+The requested ending state adds LLM structured output, Jev, and Compare both. The same applicant's answers appear side by side, with measured costs and timing in the collapsed analysis.

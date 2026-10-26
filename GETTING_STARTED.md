@@ -4,6 +4,8 @@ Branch: `02_01b`.
 
 A local applicant-review application for Video 4. It uses an LLM with structured outputs through OpenRouter or OpenAI. Jev is added during the recording.
 
+For a short setup checklist, use [README_APP.md](README_APP.md). The [video guide](lessons/04-working-application/script.html) and [Codex prompt](prompts/video-04-codex-prompt.md) describe the lesson.
+
 ## Start the application
 
 Use Python 3.12 and [uv](https://docs.astral.sh/uv/getting-started/installation/).
@@ -125,7 +127,9 @@ The `Matcher` protocol exposes `assess(job, resume) -> CandidateResult`.
 | `ats_match/data.py` | Job catalog, PDF extraction, and reference lookup |
 | `app.py` | Job selection, uploads, answers, and collapsible analysis |
 
-Add a second implementation at this boundary. During recording, add a selector for **LLM structured output** and **Jev**. Keep both available, with the same job, files, questions, answer meanings, and scheduling.
+Add a second implementation at this boundary. During recording, use the [integration prompt](prompts/video-04-codex-prompt.md) to add **LLM structured output**, **Jev**, and **Compare both**. Keep both engines available, with the same job, files, questions, answer meanings, and scheduling.
+
+Compare both should show paired answers for the same applicant, with a side-by-side measurement summary inside Analysis details. The [implementation brief](prompts/add-jev.md) specifies source selection, output compatibility, and complete cost accounting.
 
 Measure all calls needed to produce the same answers and evidence. Include any extra extraction or fallback calls. Compare full-run time, median request time, complete cost, failures, and both reference-label groups.
 

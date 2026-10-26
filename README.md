@@ -1,7 +1,7 @@
 # Jev: Getting Started with Decision Models
 This is the repository for the LinkedIn Learning course `Jev: Getting Started with Decision Models`. The full course is available from [LinkedIn Learning][lil-course-url].
 
-The `02_01b` branch contains **RoleMatch**, a working LLM starter for matching resume evidence against a job description. Start with [GETTING_STARTED.md](GETTING_STARTED.md). Jev is added in the next course stage.
+The `02_01b` branch contains **RoleMatch**, a working LLM starter for matching resume evidence against a job description. Start with [README_APP.md](README_APP.md) for the quick setup. Jev is added during the lesson using the [Codex prompt](prompts/video-04-codex-prompt.md). Detailed application notes are in [GETTING_STARTED.md](GETTING_STARTED.md).
 
 ![lil-thumbnail-url]
 

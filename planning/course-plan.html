@@ -121,21 +121,21 @@ main{max-width:820px;margin:38px auto;padding:0 30px 60px}h1{font-size:30px;line
 <li>Read evidence scores and answers. Expand the supporting analysis.</li>
 <li>Save the LLM baseline: time, tokens, cost, failures, and label agreement.</li>
 <li>Use Codex to add Jev at the matching-engine boundary.</li>
-<li>Add an LLM/Jev selector. Rerun the same inputs and compare.</li>
+<li>Run Compare both. Inspect paired answers and measurements.</li>
 </ul>
 <details>
 <summary>App, recording flow, and integration prompt</summary>
 <p><strong>Current app:</strong> RoleMatch. Use <code>uv run streamlit run app.py</code>. Setup and benchmark commands are in <a href="../GETTING_STARTED.md">GETTING_STARTED.md</a>.</p>
-<p>The starter branch contains an LLM implementation only. The Jev integration is reserved for the recording. Sample preview labels are hand-authored, with no invented API measurements.</p>
+<p>The starter branch contains an LLM implementation only. The Jev integration is reserved for the recording. The app shows live results. Learners use <a href="../README_APP.md">the quickstart README</a>.</p>
 <p>Model task: classify requirement evidence, check documented production API delivery, and assess backend delivery depth. Code task: validate source references, count evidence, display results, and export the comparison for recruiter review.</p>
-<p><strong>Recording prompt:</strong></p>
-<pre>Use the TypeSafe skill and live docs. Read GETTING_STARTED.md, ats_match/domain.py, ats_match/llm.py, ats_match/prompts.py, and ats_match/workflow.py. Add a Jev implementation at Matcher.assess(job, resume). Preserve the job requirements, sample inputs, assessment meanings, evidence line IDs, and application behavior. Ask narrow typed questions and keep composition in code. Record every request's actual model, latency, tokens, cost source, and failures. Compare both engines on the same frozen examples and reference labels. Keep the LLM baseline available. Do not invent benchmark results or treat missing resume evidence as a lack of skill.</pre>
+<p><strong>Recording materials:</strong> <a href="../lessons/04-working-application/script.html">timed video guide</a>, <a href="../prompts/video-04-codex-prompt.md">short Codex prompt</a>, and <a href="../prompts/add-jev.md">integration brief</a>. The prompt starts with <a href="https://docs.typesafe.ai/llms.txt">the official Jev docs link</a>.</p>
 <ul>
-<li>0:00-0:35: show the finished evidence workbench.</li>
-<li>0:35-1:20: open the LLM starter and explain the inference boundary.</li>
-<li>1:20-2:20: use the prepared Codex prompt. Edit out generation waits.</li>
-<li>2:20-3:30: run the same resumes with the new engine.</li>
-<li>3:30-4:50: show an actual prepared comparison and one evidence result.</li>
+<li>0:00-0:20: introduce the matching task and comparison.</li>
+<li>0:20-1:05: clone, select the branch, and run the app.</li>
+<li>1:05-1:50: analyze the PDFs with the LLM and export the baseline.</li>
+<li>1:50-3:00: add Jev with the Codex prompt. Edit out generation waits.</li>
+<li>3:00-4:20: compare the same applicant's answers, cost, and time.</li>
+<li>4:20-4:50: check when a saved comparison needs to be rerun.</li>
 <li>Keep model IDs, input hashes, prompt versions, and price provenance with the run.</li>
 <li>Compare the same judgments and evidence outputs. Include all extra inference or fallback calls.</li>
 <li>Use synthetic resumes. Final matching results support recruiter review.</li>
