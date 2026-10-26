@@ -1,0 +1,24 @@
+:root { --ink: #23342d; --muted: #6d7972; --accent: #285c48; --line: #e1e7e3; }
+html, body, .stApp, .stMarkdown, button, input, textarea, select { font-family: Host, "Avenir Next", "Segoe UI", sans-serif; }
+.stApp { color: var(--ink); background: #fff; }
+.block-container { max-width: 1220px; padding: 1.5rem 2.5rem 3rem; }
+[data-testid="stHeader"] { background: transparent; height: 0; }
+.app-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 0 0 1.15rem; margin-bottom: 1.7rem; }
+.brand { font-size: 1.4rem; font-weight: 650; letter-spacing: -.045em; }
+.app-header span { font-size: .85rem; color: var(--muted); }
+h1 { font-size: 1.9rem !important; font-weight: 650 !important; letter-spacing: -.045em; line-height: 1.2 !important; }
+h3 { font-size: 1.1rem !important; font-weight: 600 !important; letter-spacing: -.02em; }
+p, label { line-height: 1.5; }
+[data-testid="stCaptionContainer"] { color: #69766e !important; opacity: 1; }
+[data-testid="stTextArea"] textarea { font-size: .85rem; line-height: 1.65; background: #fafcfb; }
+[data-testid="stExpander"] { border-color: var(--line); border-radius: 7px; }
+[data-testid="stExpander"] summary { font-size: .88rem; }
+button[kind="primary"] { background: var(--accent); border-color: var(--accent); border-radius: 6px; min-height: 42px; font-weight: 550; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 2px solid #477d64 !important; outline-offset: 2px; }
+.empty-results { padding: 1.4rem; background: #f8faf9; border: 1px solid var(--line); border-radius: 7px; margin: 1rem 0; }
+.empty-results p { color: var(--muted); font-size: .88rem; margin: .5rem 0 0; }
+[data-testid="stMetricValue"] { font-size: 1.5rem; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+[data-testid="stMetricLabel"] { color: var(--muted); font-size: .8rem; }
+.app-footer { color: #88938c; font-size: .76rem; padding-top: 1.3rem; margin-top: 2rem; border-top: 1px solid var(--line); }
+@media (max-width: 760px) { .block-container { padding: 1rem; } h1 { font-size: 1.6rem !important; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

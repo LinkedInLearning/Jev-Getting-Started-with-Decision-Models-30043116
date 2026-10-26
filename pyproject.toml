@@ -1,14 +1,12 @@
 [project]
-name = "rolematch"
+name = "ledger-intake"
 version = "0.1.0"
-description = "Resume-to-job evidence matching with structured AI outputs."
+description = "Source-backed supplier invoice intake with Jev and explicit review policies."
 requires-python = ">=3.11,<3.14"
 dependencies = [
   "streamlit>=1.50,<2",
-  "httpx>=0.28,<1",
-  "pydantic>=2.11,<3",
   "python-dotenv>=1.1,<2",
-  "pypdf>=6,<7",
+  "typesafe-sdk>=0.7.5",
 ]
 
 [dependency-groups]

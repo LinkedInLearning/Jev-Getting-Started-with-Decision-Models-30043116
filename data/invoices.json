@@ -1,0 +1,27 @@
+[
+  {
+    "id": "INV-1048",
+    "label": "Northline Design · INV-1048",
+    "text": "NORTHLINE DESIGN STUDIO\nInvoice INV-1048\nBill to: Alder Systems Ltd.\nIssued: 21 October 2026\nCurrency: USD\n\nBrand asset production: $2,400.00\nTax: $192.00\nTotal due: $2,592.00\n\nPlease use the invoice number as the reference."
+  },
+  {
+    "id": "INV-1049",
+    "label": "Cedar Cloud · INV-1049",
+    "text": "CEDAR CLOUD SERVICES\nInvoice INV-1049\nBill to: Alder Systems Ltd.\nIssued: 22 October 2026\nCurrency: USD\n\nManaged infrastructure: $2,400.00\nTax: $192.00\nAmount due: $2,592.00\n\nBilling note: a service credit of $192.00 is pending.\nOur account manager says the payable balance may be $2,400.00.\nPlease confirm which balance is final before processing."
+  },
+  {
+    "id": "INV-1050",
+    "label": "Marble Analytics · INV-1050",
+    "text": "MARBLE ANALYTICS\nInvoice INV-1050\nBill to: Alder Systems Ltd.\nIssued: 23 October 2026\nCurrency: USD\n\nMonthly research subscription: $1,800.00\nUsage adjustment: $125.00\nTax will be calculated after the usage review.\n\nThe final invoice total will follow."
+  },
+  {
+    "id": "INV-1051",
+    "label": "Northline Design · INV-1051",
+    "text": "NORTHLINE DESIGN STUDIO\nInvoice INV-1051\nBill to: Alder Systems Ltd.\nIssued: 24 October 2026\nCurrency: USD\n\nBrand asset production: $2,400.00\nTax: $192.00\nService credit applied: $192.00\nFinal amount due after credit: $2,400.00\n\nThe credit has already been deducted. No further adjustment is pending."
+  },
+  {
+    "id": "INV-1052",
+    "label": "Haven Consulting · INV-1052",
+    "text": "HAVEN CONSULTING\nInvoice INV-1052\nBill to: Alder Systems Ltd.\nIssued: 25 October 2026\nCurrency: USD\n\nConsulting services\nTotal due: [amount missing in the extracted text]\n\nPlease request a legible copy from the supplier."
+  }
+]

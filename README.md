@@ -1,79 +1,68 @@
-# RoleMatch
+# Ledger Intake
 
-Review resume evidence against a job description.
+Capture a supplier invoice total from its source text.
+Jev selects an exact amount candidate.
+Code sends the result to a draft or a review queue.
 
-Select or edit a role, upload applications, and compare the evidence for each requirement.
-Answers include source references, request cost, and timing.
+## Run
 
-## Install
-
-Install [Git](https://git-scm.com/downloads) and [uv](https://docs.astral.sh/uv/getting-started/installation/).
-The project uses Python 3.12.
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then:
 
 ```bash
-git clone --branch 02_01b https://github.com/LinkedInLearning/Jev-Getting-Started-with-Decision-Models-30043116.git
-cd Jev-Getting-Started-with-Decision-Models-30043116
+git clone --branch 02_02 --single-branch https://github.com/LinkedInLearning/Jev-Getting-Started-with-Decision-Models-30043116.git jev-invoice-intake
+cd jev-invoice-intake
 uv sync --locked
 cp .env.example .env
 ```
 
-On Windows PowerShell, use `Copy-Item .env.example .env` for the last command.
-Keep an existing `.env` when returning to the project.
-
-## Configure an engine
-
-The app currently uses an LLM with structured outputs.
-For OpenRouter, add your key to `.env`:
-
-```dotenv
-LLM_PROVIDER=openrouter
-LLM_MODEL=openai/gpt-4.1-mini
-OPENROUTER_API_KEY=your-own-key
-```
-
-For OpenAI directly, set `LLM_PROVIDER=openai`, `LLM_MODEL=gpt-4.1-mini`, and `OPENAI_API_KEY`.
-Keys stay in the local environment file.
-
-### Optional Jev integration
-
-Open this repository in Codex and choose one prompt:
-
-| Setup | Required keys | Prompt |
-| --- | --- | --- |
-| Replace the LLM with Jev | TypeSafe only | [Connect Jev](prompts/jev-only.md) |
-| Compare LLM and Jev results | OpenRouter or OpenAI, plus TypeSafe | [Compare engines](prompts/compare-engines.md) |
-
-Both prompts link to the Jev documentation and implementation requirements.
-Jev support becomes available after the selected integration is implemented.
-Set `TYPESAFE_API_KEY` in `.env` and follow the updated setup instructions.
-
-You can install and open the app without an LLM key.
-Analysis requires a configured engine.
-The Jev-only option removes the LLM dependency and its key requirement.
-
-## Run
+Add your TypeSafe key to `TYPESAFE_API_KEY` in `.env`.
+Get a key from the [TypeSafe console](https://console.typesafe.ai/).
+Keep the key on your machine.
 
 ```bash
-uv run streamlit run app.py
+uv run streamlit run app.py --server.port 8502
 ```
 
-Open [localhost:8501](http://localhost:8501).
-Keep the terminal running.
-Restart the app after changing environment settings or dependencies.
+Open [localhost:8502](http://localhost:8502).
+No OpenAI or OpenRouter key is needed.
+Without a TypeSafe key, the interface still shows invoices and extracted values.
+Model judgments appear only after a real successful request.
 
-## Review applications
+## Use
 
-1. Select **Python Backend Engineer** on the left.
-2. Edit the job description and matching criteria if needed.
-3. Upload the five PDFs from [output/pdf/resumes](output/pdf/resumes/).
-4. Select **Analyze applications**.
-5. Select an applicant to read the answers.
-6. Expand **Analysis details** for evidence, cost, timing, and exports.
+1. Select a fictional supplier invoice or edit its text.
+2. Click **Check invoice**.
+3. Inspect the selected amount and its original source line.
+4. Review the separate Choice and Noul judgments.
+5. Adjust the review policy without making another API call.
 
-The [resume bundle](output/pdf/applicant-resumes.zip) contains five fictional applications.
-Two other job descriptions are also built in.
+The initial policy values are illustrative, not validated operating thresholds.
+A confident selection can still be wrong.
+Missing evidence and unresolved adjustments independently block a draft.
 
-Evidence match counts criteria with direct supporting evidence.
-It is not a probability of job fit or a hiring recommendation.
+This app supports text invoices with an explicit USD currency.
+It copies found amounts and never generates a new total.
+It creates an exportable draft only, with no payment action.
+It does not run OCR or accept PDF uploads.
+Token usage and request time come from the real request.
+Billed cost is unavailable when the provider does not return it.
 
-See [application details](GETTING_STARTED.md) for scoring, measurements, file limits, and checks.
+## Structure
+
+- `invoice_intake/core.py`: candidate extraction, response validation, and review policy.
+- `invoice_intake/jev.py`: one Jev request with three independent questions.
+- `data/invoices.json`: fictional invoices with clear, unresolved, and missing totals.
+- `tests/`: policy, failure, API contract, and interface checks.
+
+```bash
+uv run pytest -q
+uv run ruff check .
+```
+
+## References
+
+- [Pre-parsed value extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook)
+- [Confidence](https://docs.typesafe.ai/confidence)
+- [Choice](https://docs.typesafe.ai/primitives/choice)
+- [Noul](https://docs.typesafe.ai/primitives/noul)
+- [Python SDK](https://docs.typesafe.ai/sdk/python)
