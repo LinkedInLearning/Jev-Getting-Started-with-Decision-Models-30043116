@@ -201,7 +201,15 @@ with checks_tab:
                 st.caption(
                     f"Verdict confidence {result.judgment.confidence:.2f} · Evidence confidence {result.judgment.evidence_confidence:.2f}"
                 )
-                st.bar_chart(result.judgment.probabilities, color="#546c5e", height=190)
+                st.bar_chart(
+                    {
+                        label.replace("_", " ").title(): value
+                        for label, value in result.judgment.probabilities.items()
+                    },
+                    horizontal=True,
+                    color="#546c5e",
+                    height=190,
+                )
         with st.expander("Question and expected labels"):
             st.write(QUESTION_SPEC["relation"]["instructions"])
             st.json(QUESTION_SPEC["relation"]["criteria"])
