@@ -1,12 +1,10 @@
-# RoleMatch: the LLM starter
+# RoleMatch
 
 Branch: `02_01b`.
 
-A local resume-to-job evidence matching app for Video 4.
+A local applicant-review application for Video 4. It uses an LLM with structured outputs through OpenRouter or OpenAI. Jev is added during the recording.
 
-The app uses an LLM through OpenRouter or OpenAI. This branch has no Jev implementation or TypeSafe SDK dependency.
-
-## Run it
+## Start the application
 
 Use Python 3.12 and [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
@@ -24,7 +22,7 @@ LLM_MODEL=openai/gpt-4.1-mini
 OPENROUTER_API_KEY=your-own-key
 ```
 
-Then start the app:
+Start the application:
 
 ```bash
 uv sync --locked
@@ -33,94 +31,103 @@ uv run streamlit run app.py
 
 Open [http://localhost:8501](http://localhost:8501).
 
-For OpenAI directly, use `LLM_PROVIDER=openai`, `LLM_MODEL=gpt-4.1-mini`, and `OPENAI_API_KEY` instead.
+For OpenAI directly, set `LLM_PROVIDER=openai`, `LLM_MODEL=gpt-4.1-mini`, and `OPENAI_API_KEY`.
 
-The default model is a compact general LLM with strict JSON output. Choose any supported structured-output model in the sidebar. Changing models does not change the rubric.
+Keys and model configuration stay in the local environment file. They do not appear in the main application interface.
 
-## What to try
+## The recording workflow
 
-1. Review the role and its four explicit technical requirements.
-2. Run the three synthetic resumes with **Run LLM match**.
-3. Open one resume to compare each label with the exact source lines.
-4. Check the request time, tokens, cost, and sample label agreement.
-5. Download the evidence CSV or complete run JSON.
+1. Select **Python Backend Engineer** from the job dropdown.
+2. Read or edit the job description on the left.
+3. Upload the five PDFs from `output/pdf/resumes/` on the right.
+4. Select **Analyze applications**.
+5. Review evidence scores, then select an applicant to read the answers.
+6. Expand **Analysis details** for source text, cost, speed, reference checks, and exports.
 
-The initial sample preview is hand-authored interface data. It makes no model calls and has no API measurements. It is clearly labeled and never saved as a benchmark run.
+The other built-in roles are Backend Platform Engineer and API Integration Engineer. Each has a complete description and its own four matching criteria.
 
-You can also upload UTF-8 text or text-based PDF resumes. Up to ten files are accepted, at most 2 MB and 12 PDF pages per file. Scanned PDFs need OCR outside this starter.
+The job description is editable. **Matching criteria** contains the explicit questions used for evidence coverage. Update these when you change the requirements. Editing a description does not silently generate a different set of questions.
 
-The model evaluates documented technical evidence. Results support recruiter review. A missing statement is not evidence that a person lacks a skill. Personal attributes are excluded from the task and output.
+Only live results appear in the interface. There are no prefilled scores or simulated API measurements.
 
-## The matching task
+## Prepared applications
 
-Each resume is one request. That request asks for all judgments together:
+[Download all five resumes](output/pdf/applicant-resumes.zip), or use the individual PDFs in [output/pdf/resumes](output/pdf/resumes/).
 
-| Judgment | Defined output |
+| Applicant | Evidence to explore |
 | --- | --- |
-| Each job requirement | `direct`, `related`, `not_stated`, or `unclear`, with resume line IDs |
-| Production API delivery described | `yes`, `not_stated`, or `unclear`, with line IDs |
-| Backend service delivery depth | Level 0, 1, or 2 on the documented rubric |
+| Asha Mehta | Python APIs, production delivery, PostgreSQL, and pytest |
+| Daniel Brooks | Python backend delivery with a different testing framework |
+| Elena Torres | Adjacent data engineering experience |
+| Marcus Reed | Unclear deployment claims and a skills-list mention of pytest |
+| Sofia Khan | Production backend experience using TypeScript instead of Python |
 
-The app displays original source lines. It does not ask the model to invent explanations or quotations.
+Every person and application is fictional. Each PDF has a small training-material footer. Names and contact details are excluded from the model's assessment criteria.
 
-Strict JSON parsing checks the result. Local validation requires every requirement exactly once and rejects unknown evidence IDs. These checks establish the response structure and source references; a reviewer still checks whether the labels match the evidence.
+The PDFs are ordinary, selectable-text documents. The app also accepts UTF-8 text, up to 10 files per run, 2 MB and 12 PDF pages per file. Scanned PDFs need OCR outside this application.
 
-## Where to add the decision model during recording
+To rebuild the supplied PDFs:
 
-| File | Responsibility |
-| --- | --- |
-| `ats_match/llm.py` | Current LLM request, response parsing, usage, and price handling |
-| `ats_match/domain.py` | Shared job, resume, assessment, and receipt contract |
-| `ats_match/prompts.py` | Current LLM instructions, questions, and strict JSON schema |
-| `ats_match/workflow.py` | Model-independent matching loop, coverage counts, evaluation, and exports |
-| `app.py` | Input and results interface |
-| `data/sample_workspace.json` | Synthetic inputs and hand-labeled reference answers |
+```bash
+uv run --with reportlab python scripts/build_application_pdfs.py
+```
+
+## Understanding results
+
+**Evidence match** is the percentage of explicit criteria with direct project or work evidence. It is a coverage count, not a probability or hiring recommendation. Adjacent experience does not receive partial credit in this count.
+
+For each criterion, the model returns `direct`, `related`, `not_stated`, or `unclear`, with original resume line IDs. A missing statement does not prove a lack of skill.
+
+The app also asks whether production API delivery is documented and scores backend service delivery depth from 0 to 2 on a defined rubric. The rubric and supporting lines are inside **Analysis details**.
+
+The **Analysis run** dropdown switches between saved runs for the same current job and applications. Selecting another applicant or opening analysis details does not make a new model request. Changing the job, criteria, or files requires a fresh analysis.
+
+Run history lasts for the current browser session. Export an analysis to keep its frozen inputs, results, and request receipts.
+
+## Measurement and evaluation
+
+Each resume is one schema-constrained LLM request. All judgments are requested together. There are no hidden retries, narrative-generation calls, or alternate-model fallbacks.
+
+- Use the provider's reported `usage.cost` when available.
+- Otherwise estimate from returned tokens and a saved, matching price snapshot.
+- Account for cached tokens only when a cache price is available.
+- Keep generation cost when a response fails validation.
+- Unknown cost remains unavailable. It is never treated as zero.
+
+OpenRouter prices come from its public models API. Direct OpenAI estimates use optional dated rates from `.env`. Receipts retain actual model IDs, generation IDs, usage, latency, and price provenance.
+
+Reference evaluation is available only for unchanged bundled PDFs against the original Python role. It reports 20 requirement labels and 10 additional checks separately. Edited roles and other uploads have no supplied reference labels.
+
+A live five-PDF browser run on 26 October 2026 completed in 13.48 seconds and reported $0.0040656 in API cost. Requirement-label agreement was 18/20. Additional-check agreement was 8/10. The disagreements are preserved in the [baseline notes](lessons/04-working-application/llm-baseline.md).
+
+These examples establish functional behavior. They do not establish production hiring accuracy or comparative Jev savings.
+
+### Repeat the baseline
+
+```bash
+uv run python -m ats_match.benchmark --dataset applications --out runs/ats-applications-baseline.json --repeats 3
+```
+
+This sends 15 requests: five resumes for each of three repeats. `--dataset small` uses the earlier three short text examples.
+
+The run file preserves frozen inputs, input hashes, prompt version, every answer or error, timing, usage, cost basis, and reference-label disagreements. `runs/`, `.env`, and local exports are ignored by Git.
+
+## Add Jev during recording
 
 The `Matcher` protocol exposes `assess(job, resume) -> CandidateResult`.
 
-Add a new implementation later while keeping the same job criteria, inputs, and application behavior. The baseline does not manufacture LLM probabilities or treat a model's self-reported certainty as calibrated confidence.
+| File | Responsibility |
+| --- | --- |
+| `ats_match/llm.py` | Current inference request, parsing, usage, and pricing |
+| `ats_match/domain.py` | Shared job, resume, assessment, and receipt contract |
+| `ats_match/prompts.py` | Instructions, questions, and strict response schema |
+| `ats_match/workflow.py` | Matching loop, evaluation, and exports |
+| `ats_match/data.py` | Job catalog, PDF extraction, and reference lookup |
+| `app.py` | Job selection, uploads, answers, and collapsible analysis |
 
-## Record the baseline
+Add a second implementation at this boundary. During recording, add a selector for **LLM structured output** and **Jev**. Keep both available, with the same job, files, questions, answer meanings, and scheduling.
 
-```bash
-uv run python -m ats_match.benchmark --out runs/llm-baseline.json --repeats 3
-```
-
-This sends nine requests: three resumes for each of three repeats.
-
-The run file contains the frozen inputs, SHA-256 input hash, prompt version, requested and returned models, every result or error, elapsed times, usage, pricing provenance, and reference-label disagreements.
-
-`runs/`, `.env`, and exports are ignored by Git. UI history lasts for the current Streamlit session. Download a run to retain it.
-
-### Cost accounting
-
-- Prefer OpenRouter's returned `usage.cost`, labeled **Reported API cost**.
-- Otherwise estimate from returned input/output tokens and a saved model-price snapshot.
-- Account for cached input only when its price is available.
-- If price or usage is missing, show **Unavailable**, never a fabricated zero.
-- Preserve generation cost even when the output fails validation.
-- A failed or interrupted request can have unreported billing. Its unknown cost makes the total unavailable.
-- The default does not retry silently or switch to a different LLM.
-
-OpenRouter pricing comes from its public models API when a live run starts. Direct OpenAI calls need optional dated rates configured in `.env` to estimate cost. Receipts retain the source and timestamp. Billing-reported costs take precedence.
-
-### A fair later comparison
-
-Use the same frozen resumes, job requirements, evidence rules, reference labels, and request scheduling for both engines.
-
-Compare median request time, complete-run time, total cost with its basis, failures, and reference-label agreement. Report the costs of all inference calls that the new implementation needs. Do not compare an LLM generating long narratives with a decision model performing a smaller task.
-
-The evaluator reports twelve requirement labels and six additional evidence checks separately. The additional checks cover production API delivery and backend delivery depth.
-
-These synthetic examples are a tiny teaching set, not a production hiring validation dataset. Agreement is hidden for edited or uploaded inputs without reference labels. Failures count as disagreements in both groups.
-
-There are no projected Jev savings in this starter. Measure the second implementation during the next stage.
-
-### Live verification
-
-The OpenRouter integration and browser flow were checked on 26 October 2026. The first three-resume run cost $0.0016804, as reported by the provider, with a 3.00-second median request time.
-
-Requirement-label agreement was 12 of 12. Additional evidence-check agreement was 5 of 6. Read the [saved baseline notes](lessons/04-working-application/llm-baseline.md) for the observed disagreement and measurement limits.
+Measure all calls needed to produce the same answers and evidence. Include any extra extraction or fallback calls. Compare full-run time, median request time, complete cost, failures, and both reference-label groups.
 
 ## Checks
 
@@ -129,10 +136,10 @@ uv run ruff check .
 uv run pytest -q
 ```
 
-Tests cover malformed responses, missing requirements, invented evidence references, failed requests, cached-token estimates, unknown costs, partial-batch quality, upload boundaries, and the Streamlit flow. They make no paid API calls.
+Tests cover job switching, real PDF extraction, upload errors, stale results, result history without extra model calls, evidence validation, failed requests, billing provenance, and reference evaluation. Automated tests make no paid API calls.
 
 ## References
 
 - [OpenRouter structured outputs](https://openrouter.ai/docs/guides/features/structured-outputs)
 - [OpenRouter models and pricing API](https://openrouter.ai/api/v1/models)
-- [TypeSafe's Jack & Jill hiring case study](https://typesafe.ai/blog/jack-jill-jev-case-study), context for the future integration, not a performance claim for this app.
+- [TypeSafe's Jack & Jill hiring case study](https://typesafe.ai/blog/jack-jill-jev-case-study), context for the future integration, not a performance claim for this application.

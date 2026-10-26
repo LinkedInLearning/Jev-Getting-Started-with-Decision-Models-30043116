@@ -32,7 +32,7 @@ To resolve this issue:
 3. Copy `.env.example` to `.env` and add your OpenRouter or OpenAI API key.
 4. Run `uv run streamlit run app.py` and open [localhost:8501](http://localhost:8501).
 
-The app includes synthetic resumes, a clearly labeled interface preview, and a live LLM matching workflow. See [GETTING_STARTED.md](GETTING_STARTED.md) for benchmark commands and the engine boundary used during recording.
+The app includes three editable job descriptions, five fictional PDF resumes, and a live LLM matching workflow. Upload the PDFs from `output/pdf/resumes/` to see evidence scores and applicant answers. Supporting analysis stays collapsed below the answers. See [GETTING_STARTED.md](GETTING_STARTED.md) for the recording workflow and later Jev integration.
 
 ## Instructor
 

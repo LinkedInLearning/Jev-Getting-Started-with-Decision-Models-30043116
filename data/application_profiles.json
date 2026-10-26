@@ -1,0 +1,168 @@
+{
+  "note": "Fictional people and employers. These applications are teaching material, not real applicant records.",
+  "opening_id": "backend-python",
+  "profiles": [
+    {
+      "filename": "Asha_Mehta.pdf",
+      "name": "Asha Mehta",
+      "title": "Senior Backend Engineer",
+      "email": "asha.mehta@example.com",
+      "summary": "Backend engineer focused on Python APIs, relational data models, and dependable service delivery. Comfortable owning a service from design to production support.",
+      "skills": "Python, FastAPI, PostgreSQL, pytest, Docker, AWS ECS, GitHub Actions",
+      "experience": [
+        {
+          "role": "Senior Backend Engineer",
+          "company": "Harborwell Systems",
+          "dates": "2022 - Present",
+          "bullets": [
+            "Owned implementation of a Python FastAPI order-management API and deployed the service to production on AWS ECS.",
+            "Designed PostgreSQL schemas, wrote application migrations, and improved queries used by the API.",
+            "Wrote pytest unit and integration tests for endpoints, database transactions, and failed payment callbacks.",
+            "Packaged the service in Docker and maintained its GitHub Actions release pipeline."
+          ]
+        },
+        {
+          "role": "Backend Engineer",
+          "company": "Ledgerfield Software",
+          "dates": "2020 - 2022",
+          "bullets": [
+            "Integrated a third-party invoicing REST API using Python, with signed webhooks and idempotent event processing.",
+            "Added retry handling for temporary partner failures and documented recovery procedures."
+          ]
+        }
+      ],
+      "project": {"title": "Order reconciliation service", "text": "Built a background reconciliation worker that compared order events with payment records. Used PostgreSQL transaction boundaries and pytest fixtures to test duplicate deliveries."},
+      "labels": {"matches": {"R01": "direct", "R02": "direct", "R03": "direct", "R04": "direct"}, "production_api": "yes", "backend_depth": 2}
+    },
+    {
+      "filename": "Daniel_Brooks.pdf",
+      "name": "Daniel Brooks",
+      "title": "Backend Engineer",
+      "email": "daniel.brooks@example.com",
+      "summary": "Backend engineer working on service reliability and transactional applications. Experience implementing Python APIs and operating containerized services.",
+      "skills": "Python, Django REST Framework, PostgreSQL, unittest, Docker, Kubernetes, Prometheus, Grafana",
+      "experience": [
+        {
+          "role": "Backend Engineer",
+          "company": "Maplebridge Logistics",
+          "dates": "2021 - Present",
+          "bullets": [
+            "Built Python APIs with Django REST Framework for shipment booking and dispatch workflows.",
+            "Owned implementation and production deployment of the booking API on Kubernetes.",
+            "Designed PostgreSQL tables and migrations, and tuned slow queries for dispatch screens.",
+            "Wrote automated unit and API tests using Python unittest and Django TestCase.",
+            "Created Prometheus alerts and Grafana dashboards for API errors and request latency."
+          ]
+        },
+        {
+          "role": "Software Engineer",
+          "company": "Ternway Services",
+          "dates": "2019 - 2021",
+          "bullets": [
+            "Maintained internal Python reporting services and containerized scheduled jobs with Docker.",
+            "Supported database migrations and reviewed operational runbooks before releases."
+          ]
+        }
+      ],
+      "project": {"title": "Shipment event replay", "text": "Created an internal tool to replay failed shipment events after an incident. Added dry-run output and audit records so operations could inspect the proposed changes."},
+      "labels": {"matches": {"R01": "direct", "R02": "direct", "R03": "direct", "R04": "related"}, "production_api": "yes", "backend_depth": 2}
+    },
+    {
+      "filename": "Elena_Torres.pdf",
+      "name": "Elena Torres",
+      "title": "Data Engineer",
+      "email": "elena.torres@example.com",
+      "summary": "Data engineer focused on reliable analytical pipelines and well-tested reporting datasets. Works closely with finance and operations teams to improve data quality.",
+      "skills": "Python, pandas, Apache Airflow, BigQuery, SQL, pytest, dbt",
+      "experience": [
+        {
+          "role": "Data Engineer",
+          "company": "Willowbank Analytics",
+          "dates": "2022 - Present",
+          "bullets": [
+            "Built Python ETL pipelines with pandas and Apache Airflow to prepare daily reporting datasets.",
+            "Wrote SQL transformations and maintained analytical models in BigQuery.",
+            "Wrote pytest tests for transformation functions, source-file validation, and duplicate records.",
+            "Added pipeline alerts and documented recovery steps for delayed or missing source data."
+          ]
+        },
+        {
+          "role": "Analytics Engineer",
+          "company": "Northquay Retail",
+          "dates": "2020 - 2022",
+          "bullets": [
+            "Created dbt models and reporting tables for inventory and margin analysis.",
+            "Worked with analysts to agree data definitions and validate reporting changes."
+          ]
+        }
+      ],
+      "project": {"title": "Supplier data quality checks", "text": "Built a Python validation package for supplier CSV feeds. Used pytest fixtures to cover missing columns, invalid dates, and duplicate identifiers before loading data into BigQuery."},
+      "labels": {"matches": {"R01": "related", "R02": "not_stated", "R03": "related", "R04": "direct"}, "production_api": "not_stated", "backend_depth": 0}
+    },
+    {
+      "filename": "Marcus_Reed.pdf",
+      "name": "Marcus Reed",
+      "title": "Software Engineer",
+      "email": "marcus.reed@example.com",
+      "summary": "Software engineer contributing to internal workflow products. Experience developing Python endpoints and relational data features within a small product team.",
+      "skills": "Python, FastAPI, PostgreSQL, pytest, Git, Docker",
+      "experience": [
+        {
+          "role": "Software Engineer",
+          "company": "Brambleworks",
+          "dates": "2023 - Present",
+          "bullets": [
+            "Built Python FastAPI endpoints for an internal inventory prototype.",
+            "Designed PostgreSQL tables and wrote queries for stock adjustments and warehouse locations.",
+            "The project summary describes a production pilot. The final handover identifies staging as the only verified deployment environment.",
+            "Release ownership was shared with another team and is not specified in the project handover.",
+            "Ran manual endpoint checks and documented expected responses before review."
+          ]
+        },
+        {
+          "role": "Application Developer",
+          "company": "Elmford Studio",
+          "dates": "2021 - 2023",
+          "bullets": [
+            "Maintained Python scripts for importing customer-provided spreadsheets.",
+            "Worked with product colleagues to reproduce bugs and document acceptance checks."
+          ]
+        }
+      ],
+      "project": {"title": "Inventory adjustment workflow", "text": "Added validation to a FastAPI endpoint and a PostgreSQL transaction for stock adjustments. Prepared example requests and a handover note for the platform team."},
+      "labels": {"matches": {"R01": "direct", "R02": "unclear", "R03": "direct", "R04": "related"}, "production_api": "unclear", "backend_depth": 1}
+    },
+    {
+      "filename": "Sofia_Khan.pdf",
+      "name": "Sofia Khan",
+      "title": "Product Engineer",
+      "email": "sofia.khan@example.com",
+      "summary": "Product engineer building customer-facing workflows across frontend and backend systems. Focused on TypeScript services, transactional data, and incremental releases.",
+      "skills": "TypeScript, Node.js, Express, React, PostgreSQL, Prisma, Vitest, Playwright",
+      "experience": [
+        {
+          "role": "Product Engineer",
+          "company": "Otterpath Commerce",
+          "dates": "2022 - Present",
+          "bullets": [
+            "Owned implementation of a Node.js Express API for merchant onboarding and deployed it to production.",
+            "Designed PostgreSQL schemas, wrote Prisma migrations, and improved queries for onboarding reports.",
+            "Built React forms for account setup and wrote automated API tests using Vitest.",
+            "Added Playwright tests for the onboarding journey and investigated failed production requests."
+          ]
+        },
+        {
+          "role": "Frontend Engineer",
+          "company": "Fieldglass Digital",
+          "dates": "2020 - 2022",
+          "bullets": [
+            "Built React and TypeScript interfaces for account and order management.",
+            "Worked with backend engineers to agree API contracts and handle validation errors."
+          ]
+        }
+      ],
+      "project": {"title": "Merchant onboarding API", "text": "Implemented an Express service with PostgreSQL persistence and request validation. Added idempotent creation requests and Vitest coverage for repeated submissions."},
+      "labels": {"matches": {"R01": "related", "R02": "direct", "R03": "direct", "R04": "related"}, "production_api": "yes", "backend_depth": 2}
+    }
+  ]
+}

@@ -10,7 +10,11 @@ Replace a working LLM matching step while preserving the application behavior an
 
 ## Demonstration
 
-Use RoleMatch, a Python/Streamlit resume-to-job evidence workbench.
+Use RoleMatch, a Python/Streamlit applicant-review application.
+
+Select the Python Backend Engineer opening. Show the editable job description on the left. Upload the five PDFs from `output/pdf/resumes/` on the right.
+
+Read the evidence scores and an applicant's answers. Expand Analysis details for source lines, cost, speed, and exports.
 
 The starter evaluates every job requirement, checks documented production API delivery, and assesses backend delivery depth with one LLM request per resume.
 
@@ -18,9 +22,9 @@ During recording, add a new inference implementation at `Matcher.assess(job, res
 
 Read [GETTING_STARTED.md](../../GETTING_STARTED.md). Start with `uv run streamlit run app.py`.
 
-Capture the LLM baseline with `uv run python -m ats_match.benchmark --out runs/llm-baseline.json --repeats 3`.
+Capture the LLM baseline with `uv run python -m ats_match.benchmark --dataset applications --out runs/ats-applications-baseline.json --repeats 3`.
 
-Compare actual latency, cost with its source, failed requests, and requirement-label agreement. No comparative savings are assumed.
+During recording, add the LLM/Jev selector alongside the second engine. Compare actual latency, cost with its source, failed requests, requirement-label agreement, and additional evidence-check agreement. No comparative savings are assumed.
 
 ## Learner checkpoint
 

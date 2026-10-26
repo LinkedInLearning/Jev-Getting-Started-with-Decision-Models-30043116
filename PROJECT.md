@@ -36,7 +36,7 @@ Learners start with an LLM-powered resume evidence workbench, then add Jev durin
 
 ## Current status
 
-RoleMatch is the LLM-only starter on branch `02_01b`.
+RoleMatch is the LLM-only starter on branch `02_01b`. Its main screen has an editable job description on the left and resume uploads on the right. Results appear below, with supporting evidence and measurements in a collapsed analysis panel.
 
 It compares resumes against explicit job requirements, displays original source lines, and records model usage, cost provenance, latency, failures, and sample-label agreement.
 
@@ -44,9 +44,9 @@ Run `uv sync --locked`, configure the local `.env`, and use `uv run streamlit ru
 
 Read [GETTING_STARTED.md](GETTING_STARTED.md) for setup, the inference boundary, and the baseline benchmark command.
 
-The three synthetic resumes include direct project evidence, adjacent experience, and conflicting deployment claims. The hand-authored UI preview is separate from live LLM runs.
+Three built-in job openings and five fictional one-page PDF resumes are ready for recording. The PDFs are in `output/pdf/resumes/`, with a ZIP bundle in `output/pdf/applicant-resumes.zip`. The interface has no prefilled or simulated results.
 
-Live OpenRouter and browser checks passed on 26 October 2026. The first three-request run cost $0.0016804, with a 3.00-second median request time. Requirement-label agreement was 12 of 12. Additional evidence-check agreement was 5 of 6. See the [baseline notes](lessons/04-working-application/llm-baseline.md).
+Live OpenRouter and browser checks passed on 26 October 2026. The five-PDF run cost $0.0040656, with 13.48 seconds total time and a 2.63-second median request. Requirement-label agreement was 18 of 20. Additional evidence-check agreement was 8 of 10. See the [baseline notes](lessons/04-working-application/llm-baseline.md) for preserved disagreements and the earlier short-text check.
 
 This branch contains no Jev implementation. Comparative savings remain to be measured after the decision-model integration is added.
 

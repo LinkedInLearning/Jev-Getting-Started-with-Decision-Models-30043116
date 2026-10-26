@@ -29,6 +29,8 @@
 - Use synthetic resumes and job descriptions for course demonstrations.
 - Maintain the publisher's license, notice, contribution policy, and exercise branch convention.
 - The teaching app is RoleMatch, a Python/Streamlit resume evidence workbench. Read GETTING_STARTED.md for actual setup and run commands.
+- Keep its main screen minimal: editable job on the left, multi-file uploads on the right, answers below, and detailed analysis collapsed. Do not put course notes or model configuration in the main workflow.
+- Use the five fictional PDFs in output/pdf/resumes/ for recording. The built-in job catalog is in data/job_openings.json. No prefilled result scores appear in the interface.
 - Keep the job, resume text, requirement definitions, reference labels, and scheduling fixed when comparing inference engines.
 - Record actual usage, cost provenance, latency, failures, and reference-label agreement. Missing usage or prices are unavailable, not zero.
 - Keep inference inside the `Matcher.assess(job, resume)` boundary. Application counts and exports stay in ordinary code.
