@@ -58,6 +58,8 @@ def test_live_action_updates_receipts_and_edited_inputs_cannot_reuse_results(
     assert any(
         metric.label == "Reported API cost" and metric.value == "$0.003000" for metric in at.metric
     )
+    assert any("Sample requirement-label agreement: 12 / 12" in x.value for x in at.markdown)
+    assert any("Additional evidence-check agreement: 6 / 6" in x.value for x in at.markdown)
     next(text for text in at.text_input if text.label == "Role").input("Edited role").run()
     assert not at.exception
     assert any("Inputs changed" in message.value for message in at.info)

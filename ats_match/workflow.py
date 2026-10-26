@@ -84,14 +84,17 @@ def run_matching(job: Job, resumes: list[Resume], matcher: Matcher, progress=Non
 def evaluate(
     run: Run, reference_job: Job, reference_resumes: list[Resume], labels: dict
 ) -> dict | None:
-    reference = {r.id: r for r in reference_resumes}
-    if run.job != reference_job:
+    # Streamlit can reload model classes while retaining a previous run in session state.
+    reference = {r.id: r.model_dump(mode="json") for r in reference_resumes}
+    if run.job.model_dump(mode="json") != reference_job.model_dump(mode="json"):
         return None
-    if any(reference.get(r.id) != r for r in run.resumes):
+    if any(reference.get(r.id) != r.model_dump(mode="json") for r in run.resumes):
         return None
     correct = 0
     total = len(run.resumes) * len(run.job.requirements)
     errors = []
+    additional_correct = 0
+    additional_errors = []
     for result in run.results:
         expected = labels[result.resume_id]["matches"]
         actual = (
@@ -111,11 +114,40 @@ def evaluate(
                         "actual": actual.get(req_id, "request_failed"),
                     }
                 )
+        additional = (
+            {
+                "production_api": result.assessment.production_api.status,
+                "backend_depth": result.assessment.backend_depth.level,
+            }
+            if result.assessment
+            else {}
+        )
+        for check in ("production_api", "backend_depth"):
+            expected_value = labels[result.resume_id][check]
+            actual_value = additional.get(check, "request_failed")
+            if actual_value == expected_value:
+                additional_correct += 1
+            else:
+                additional_errors.append(
+                    {
+                        "resume_id": result.resume_id,
+                        "check": check,
+                        "expected": expected_value,
+                        "actual": actual_value,
+                    }
+                )
+    additional_total = len(run.resumes) * 2
     return {
         "correct": correct,
         "total": total,
         "agreement": correct / total if total else None,
         "disagreements": errors,
+        "additional_checks": {
+            "correct": additional_correct,
+            "total": additional_total,
+            "agreement": additional_correct / additional_total if additional_total else None,
+            "disagreements": additional_errors,
+        },
     }
 
 

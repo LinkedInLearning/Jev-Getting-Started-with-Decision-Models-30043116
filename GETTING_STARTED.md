@@ -110,9 +110,17 @@ Use the same frozen resumes, job requirements, evidence rules, reference labels,
 
 Compare median request time, complete-run time, total cost with its basis, failures, and reference-label agreement. Report the costs of all inference calls that the new implementation needs. Do not compare an LLM generating long narratives with a decision model performing a smaller task.
 
-The twelve requirement labels are a tiny teaching set, not a production hiring validation dataset. Agreement is hidden for edited or uploaded inputs without reference labels. Failures count as disagreements.
+The evaluator reports twelve requirement labels and six additional evidence checks separately. The additional checks cover production API delivery and backend delivery depth.
+
+These synthetic examples are a tiny teaching set, not a production hiring validation dataset. Agreement is hidden for edited or uploaded inputs without reference labels. Failures count as disagreements in both groups.
 
 There are no projected Jev savings in this starter. Measure the second implementation during the next stage.
+
+### Live verification
+
+The OpenRouter integration and browser flow were checked on 26 October 2026. The first three-resume run cost $0.0016804, as reported by the provider, with a 3.00-second median request time.
+
+Requirement-label agreement was 12 of 12. Additional evidence-check agreement was 5 of 6. Read the [saved baseline notes](lessons/04-working-application/llm-baseline.md) for the observed disagreement and measurement limits.
 
 ## Checks
 

@@ -46,6 +46,8 @@ Read [GETTING_STARTED.md](GETTING_STARTED.md) for setup, the inference boundary,
 
 The three synthetic resumes include direct project evidence, adjacent experience, and conflicting deployment claims. The hand-authored UI preview is separate from live LLM runs.
 
+Live OpenRouter and browser checks passed on 26 October 2026. The first three-request run cost $0.0016804, with a 3.00-second median request time. Requirement-label agreement was 12 of 12. Additional evidence-check agreement was 5 of 6. See the [baseline notes](lessons/04-working-application/llm-baseline.md).
+
 This branch contains no Jev implementation. Comparative savings remain to be measured after the decision-model integration is added.
 
 The [eight-slide introduction](https://docs.google.com/presentation/d/1pnz2Du74DxdTHrVW-zysbOstVhugFgjZTW6EZ6uoOa4/edit) includes the official white TypeSafe mark, original editable diagrams, and a comparison table.

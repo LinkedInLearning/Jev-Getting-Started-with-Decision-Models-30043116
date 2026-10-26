@@ -329,11 +329,17 @@ with workbench:
                 st.write(
                     f"Sample requirement-label agreement: {quality['correct']} / {quality['total']}"
                 )
+                extra = quality["additional_checks"]
+                st.write(
+                    f"Additional evidence-check agreement: {extra['correct']} / {extra['total']}"
+                )
                 st.caption(
-                    "Compared with the hand-labeled synthetic examples. Failed requests count as disagreements. This small set is not a production accuracy estimate."
+                    "Additional checks cover production API delivery and backend delivery depth. Compared with the hand-labeled synthetic examples. Failed requests count as disagreements. This small set is not a production accuracy estimate."
                 )
                 if quality["disagreements"]:
                     st.json(quality["disagreements"])
+                if extra["disagreements"]:
+                    st.json(extra["disagreements"])
             else:
                 st.caption("No reference labels are available for these edited or uploaded inputs.")
             st.json([r.receipt.model_dump(mode="json") for r in active_run.results])

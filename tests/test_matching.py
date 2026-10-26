@@ -9,8 +9,10 @@ from ats_match.domain import (
     Assessment,
     CandidateResult,
     EvidenceStatus,
+    Job,
     PriceSnapshot,
     Receipt,
+    Resume,
     validate_evidence,
 )
 from ats_match.llm import LLMMatcher, LLMSettings, fill_usage
@@ -243,9 +245,65 @@ def test_partial_failures_count_against_quality_and_keep_cost_unknown(workspace,
     assert run.summary["total_cost_usd"] is None
     assert run.summary["known_cost_usd"] == 0.002
     assert evaluate(run, job, resumes, labels)["agreement"] == pytest.approx(8 / 12)
+    assert evaluate(run, job, resumes, labels)["additional_checks"]["agreement"] == pytest.approx(
+        4 / 6
+    )
     assert "timeout" in results_csv(run)
     edited = [resumes[0].model_copy(update={"text": resumes[0].text + "\nExtra detail"})]
     run.resumes = edited
+    assert evaluate(run, job, resumes, labels) is None
+
+
+@pytest.mark.parametrize("check", ["production_api", "backend_depth"])
+def test_additional_judgment_errors_are_visible_even_when_requirement_labels_match(
+    workspace, assessments, check
+):
+    job, resumes, labels = workspace
+
+    class FakeMatcher:
+        def assess(self, job, resume):
+            answer = assessments[resume.id].model_copy(deep=True)
+            if resume.id == "C02":
+                if check == "production_api":
+                    answer.production_api.status = "yes"
+                else:
+                    answer.backend_depth.level = 1
+            return CandidateResult(resume_id=resume.id, assessment=answer, receipt=receipt())
+
+    quality = evaluate(run_matching(job, resumes, FakeMatcher()), job, resumes, labels)
+    assert quality["agreement"] == 1.0
+    assert quality["additional_checks"]["correct"] == 5
+    assert quality["additional_checks"]["total"] == 6
+    assert quality["additional_checks"]["disagreements"] == [
+        {
+            "resume_id": "C02",
+            "check": check,
+            "expected": labels["C02"][check],
+            "actual": "yes" if check == "production_api" else 1,
+        }
+    ]
+
+
+def test_saved_inputs_are_compared_by_content_after_model_classes_reload(workspace, assessments):
+    job, resumes, labels = workspace
+
+    class RecreatedJob(Job):
+        pass
+
+    class RecreatedResume(Resume):
+        pass
+
+    class FakeMatcher:
+        def assess(self, job, resume):
+            return CandidateResult(
+                resume_id=resume.id, assessment=assessments[resume.id], receipt=receipt()
+            )
+
+    run = run_matching(job, resumes, FakeMatcher())
+    run.job = RecreatedJob.model_validate(job.model_dump())
+    run.resumes = [RecreatedResume.model_validate(r.model_dump()) for r in resumes]
+    assert evaluate(run, job, resumes, labels)["additional_checks"]["agreement"] == 1.0
+    run.job.description += " Edited input."
     assert evaluate(run, job, resumes, labels) is None
 
 
