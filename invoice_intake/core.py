@@ -194,7 +194,7 @@ def route(result: Result, policy: Policy) -> Route:
     if answer.has_payable_total < policy.min_presence:
         reasons.append("The final amount due is not sufficiently supported by the source.")
     if answer.unresolved_amounts > policy.max_unresolved:
-        reasons.append("A conflicting total or pending adjustment needs a person to check it.")
+        reasons.append("The unresolved-amount probability exceeds the current review policy.")
     if answer.confidence < policy.min_confidence:
         reasons.append("The amount selection falls below the confidence policy.")
     if reasons:
