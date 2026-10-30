@@ -48,7 +48,7 @@ Harshit deploys proven AI solutions that help enterprises become AI first. At Ag
 He has also taught AI to a large global audience through his courses, corporate training, and [YouTube content](https://www.youtube.com/c/DataSciencewithHarshit/about), which has helped him sharpen a practical style of explaining complex business ideas so they're easier to understand and apply.
                             
 
-Check out my other courses on [LinkedIn Learning](https://www.linkedin.com/learning/instructors/).
+Check out my other courses on [LinkedIn Learning](https://www.linkedin.com/learning/instructors/harshit-tyagi?u=104).
 
 
 [0]: # (Replace these placeholder URLs with actual course URLs)
