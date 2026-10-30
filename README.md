@@ -1,5 +1,5 @@
 # Jev: Getting Started with Decision Models
-This is the repository for the LinkedIn Learning course `Jev: Getting Started with Decision Models`. The full course is available from [LinkedIn Learning][lil-course-url].
+This is the repository for the LinkedIn Learning course `Jev: Getting Started with Decision Models`. The full course is available from [LinkedIn Learning](https://www.linkedin.com/learning/jev-foundations-working-with-decision-models-first-response).
 
 ![lil-thumbnail-url]
 
