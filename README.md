@@ -4,8 +4,16 @@ This is the repository for the LinkedIn Learning course `Jev: Getting Started wi
 ![lil-thumbnail-url]
 
 ## Course Description
+AI applications often need to make structured decisions, from routing requests and selecting tools to determining when human review is needed. In this course, AI consultant and founder Harshit Tyagi, shows you how to use Jev decision models to bring structured decision-making into application workflows. Explore how decision models work, choose the right question type for different scenarios, and connect Jev to an existing application through its API. You’ll also learn to use confidence scores to manage uncertainty and human review, as well as build evaluation sets to test and improve decision workflows.
 
+## Learning Objectives
+- Explain how decision models support application workflows.
+- Choose question types for different decision scenarios.
+- Integrate Jev decision models into an application.
+- Use confidence scores and evaluations to improve decision workflows.
+  
 _See the readme file in the main branch for updated instructions and information._
+
 ## Instructions
 This repository has branches for each of the videos in the course. You can use the branch pop up menu in github to switch to a specific branch and take a look at the course at that stage, or you can add `/tree/BRANCH_NAME` to the URL to go to the branch you want to access.
 
@@ -32,10 +40,12 @@ To resolve this issue:
 
 ## Instructor
 
-Instructor name
+Harshit Tyagi - AI consultant & founder of Agentiwise AI Agency
 
 Instructor description
+Harshit deploys proven AI solutions that help enterprises become AI first. At Agentiwise, he supports organizations in implementing AI systems, building internal tools, and adopting AI with clear focus on ROI.
 
+He has also taught AI to a large global audience through his courses, corporate training, and [YouTube content](https://www.youtube.com/c/DataSciencewithHarshit/about), which has helped him sharpen a practical style of explaining complex business ideas so they're easier to understand and apply.
                             
 
 Check out my other courses on [LinkedIn Learning](https://www.linkedin.com/learning/instructors/).
@@ -44,5 +54,5 @@ Check out my other courses on [LinkedIn Learning](https://www.linkedin.com/learn
 [0]: # (Replace these placeholder URLs with actual course URLs)
 
 [lil-course-url]: https://www.linkedin.com/learning/
-[lil-thumbnail-url]: https://media.licdn.com/dms/image/v2/D4E0DAQG0eDHsyOSqTA/learning-public-crop_675_1200/B4EZVdqqdwHUAY-/0/1741033220778?e=2147483647&v=beta&t=FxUDo6FA8W8CiFROwqfZKL_mzQhYx9loYLfjN-LNjgA
+[lil-thumbnail-url]: https://media.licdn.com/dms/image/v2/D560DAQFfFnIL83YeQQ/learning-public-crop_675_1200/B56aGNllRvJwAc-/0/1793376802725?e=2147483647&v=beta&t=x1WJrx8ijYjNnev1Sorawyv4BmQhQskv_95WpvAKpf4
 
